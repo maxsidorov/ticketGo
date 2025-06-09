@@ -42,24 +42,23 @@ func (s *EventStorage) Create(event *Event) (int, error) {
   return int(id), nil
 }
 
-func (s *EventStorage) GetAll() ([]Event, error) {
-  // Базовая реализация без пагинации
-  rows, err := s.db.Query("SELECT id, title, date FROM events")
-  if err != nil {
-    return nil, err
-  }
-  defer rows.Close()
-  var events []Event
-  for rows.Next() {
-    var e Event
-    if err := rows.Scan(&e.ID, &e.Title, &e.Date); err != nil {
+  func (s *EventStorage) GetAll() ([]Event, error) {
+    // Базовая реализация без пагинации
+    rows, err := s.db.Query("SELECT id, title, date, place, decsription, price, tickets, sold_tickets, image, discount FROM events")
+    if err != nil {
       return nil, err
     }
-    events = append(events, e)
+    defer rows.Close()
+    var events []Event
+    for rows.Next() {
+      var e Event
+      if err := rows.Scan(&e.ID, &e.Title, &e.Date, &e.Place, &e.Decsription, &e.Price, &e.Tickets, &e.Sold_tickets, &e.Image, &e.Discount); err != nil {
+        return nil, err
+      }
+      events = append(events, e)
+    }
+    return events, nil
   }
-  return events, nil
-}
-
 // Модель данных
 type Event struct {
   ID        int
