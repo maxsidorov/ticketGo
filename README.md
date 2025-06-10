@@ -46,19 +46,8 @@
 ## Локальный запуск
 
 1. Установите PostgreSQL и создайте базу данных `postgres` с пользователем `postgres` и паролем `postgres` (или измените параметры в .env).
-2. Создайте файл `.env` в корне проекта:
 
-   ```env
-   DB_HOST=localhost
-   DB_PORT=5432
-   DB_USER=postgres
-   DB_PASSWORD=postgres
-   DB_NAME=postgres
-   DB_SSLMODE=disable
-   PORT=8080
-   ```
-
-3. Запустите приложение:
+2. Запустите приложение:
 
    ```sh
    go run cmd/app/main.go
