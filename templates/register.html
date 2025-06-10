@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация - ticketGo</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<nav>
+    <a href="/">Главная</a>
+    <a href="/login">Авторизоваться</a>
+    <a href="/register">Зарегистрироваться</a>
+</nav>
+<h1>Регистрация</h1>
+{{if .flash}}
+    <div class="flash">{{index .flash 0}}</div>
+{{end}}
+<form method="post" action="/register">
+    <label>Имя пользователя:<br><input type="text" name="username" required></label><br>
+    <button type="submit">Зарегистрироваться</button>
+</form>
+</body>
+</html> 

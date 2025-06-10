@@ -1,61 +1,44 @@
 package storage
 
 import (
-  "database/sql"
-  "fmt"
-  "time"
+	"gorm.io/gorm"
+	"github.com/maxsidorov/ticketGo/models"
 )
-// инициализация базы данных
-func InitDB(file string) (*sql.DB, error) {
-  db, err := sql.Open("sqlite3", file)
-  if err != nil {
-    return nil, fmt.Errorf("failed to open database: %w", err)
-  }
 
-  // Применяем схему
-  if _, err := db.Exec(`
-    CREATE TABLE IF NOT EXISTS events (...); -- из schema.sql
-  `); err != nil {
-    return nil, fmt.Errorf("failed to create tables: %w", err)
-  }
-
-  return db, nil
-}
 // создание события
 type EventStorage struct {
-  db *sql.DB
-}
-func NewEventStorage(db *sql.DB) *EventStorage {
-  return &EventStorage{db: db}
-}
-func (s *EventStorage) Create(event *Event) (int, error) {
-  // Реализация простого создания
-  res, err := s.db.Exec(
-    `INSERT INTO events (id, title, date, place, decsription, price, tickets, sold_tickets, image, discount) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    event.ID, event.Title, event.Date, event.Place, event.Decsription, event.Price, event.Tickets, event.Sold_tickets, event.Image, event.Discount,
-  )
-  if err != nil {
-    return 0, err
-  }
-
-  id, _ := res.LastInsertId()
-  return int(id), nil
+	db *gorm.DB
 }
 
-  func (s *EventStorage) GetAll() ([]Event, error) {
-    // Базовая реализация без пагинации
-    rows, err := s.db.Query("SELECT id, title, date, place, decsription, price, tickets, sold_tickets, image, discount FROM events")
-    if err != nil {
-      return nil, err
-    }
-    defer rows.Close()
-    var events []Event
-    for rows.Next() {
-      var e Event
-      if err := rows.Scan(&e.ID, &e.Title, &e.Date, &e.Place, &e.Decsription, &e.Price, &e.Tickets, &e.Sold_tickets, &e.Image, &e.Discount); err != nil {
-        return nil, err
-      }
-      events = append(events, e)
-    }
-    return events, nil
-  }
+func NewEventStorage(db *gorm.DB) *EventStorage {
+	return &EventStorage{db: db}
+}
+
+func (s *EventStorage) Create(event *models.Event) (uint, error) {
+	if err := s.db.Create(event).Error; err != nil {
+		return 0, err
+	}
+	return event.ID, nil
+}
+
+func (s *EventStorage) GetAll(page, pageSize int) ([]models.Event, error) {
+	var events []models.Event
+	err := s.db.Offset((page-1)*pageSize).Limit(pageSize).Find(&events).Error
+	return events, err
+}
+
+func (s *EventStorage) GetByID(id int) (*models.Event, error) {
+	var event models.Event
+	if err := s.db.First(&event, id).Error; err != nil {
+		return nil, err
+	}
+	return &event, nil
+}
+
+func (s *EventStorage) Update(event *models.Event) error {
+	return s.db.Save(event).Error
+}
+
+func (s *EventStorage) Delete(id int) error {
+	return s.db.Delete(&models.Event{}, id).Error
+}

@@ -5,14 +5,12 @@ import (
 )
 
 type Event struct {
-  ID        int
-  Title     string
-  Date      time.Time
-  Place  string
-  Decsription string
-  Price     float64
-  Tickets   int
-  Sold_tickets int
-  Image     string
-  Discount  float64
+	ID           uint      `gorm:"primaryKey"`
+	Title        string    `gorm:"not null"`
+	DateTime     time.Time `gorm:"column:date_time;not null"`
+	Location     string    `gorm:"not null"`
+	Description  string
+	Price        float64   `gorm:"not null"`
+	TotalTickets int       `gorm:"not null"`
+	SoldTickets  int       `gorm:"default:0"`
 }

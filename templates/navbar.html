@@ -1,0 +1,11 @@
+<nav>
+    {{if .username}}
+        <a href="/">Главная</a>
+        <span>{{.username}}</span>
+        <a href="/logout">Выйти</a>
+    {{else}}
+        <a href="/">Главная</a>
+        <a href="/login">Авторизоваться</a>
+        <a href="/register">Зарегистрироваться</a>
+    {{end}}
+</nav> 

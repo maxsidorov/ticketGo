@@ -1,8 +1,8 @@
 package service
 
 import (
-	"models"//
-	"storage"//
+	"github.com/maxsidorov/ticketGo/models"
+	"github.com/maxsidorov/ticketGo/storage"
 	"errors"
 	"time"
 )
@@ -15,8 +15,8 @@ func NewEventService(storage *storage.EventStorage) *EventService {
 	return &EventService{storage: storage}
 }
 
-func (s *EventService) CreateEvent(event *models.Event) (int, error) {
-	if event.Date.Before(time.Now()) {
+func (s *EventService) CreateEvent(event *models.Event) (uint, error) {
+	if event.DateTime.Before(time.Now()) {
 		return 0, errors.New("event date must be in the future")
 	}
 	return s.storage.Create(event)
