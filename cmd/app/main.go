@@ -1,16 +1,16 @@
 package main
 
 import (
-	"fmt"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"github.com/maxsidorov/ticketGo/config"
 	"github.com/maxsidorov/ticketGo/controllers"
 	"github.com/maxsidorov/ticketGo/models"
 	"github.com/maxsidorov/ticketGo/routes"
 	"github.com/maxsidorov/ticketGo/storage"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
+	"gorm.io/gorm"
+	"log"
 )
 
 var db *gorm.DB
@@ -20,9 +20,8 @@ func main() {
 	var err error
 	db, err = storage.InitPostgresGorm(cfg)
 	if err != nil {
-		panic(fmt.Sprintf("failed to connect to db: %v", err))
+		log.Fatal("Failed to connect to database")
 	}
-
 	// Миграция моделей
 	db.AutoMigrate(&models.Event{}, &models.User{}, &models.Ticket{}, &models.UserTicket{})
 

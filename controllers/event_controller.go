@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"net/http"
 	"github.com/gin-gonic/gin"
 	"github.com/maxsidorov/ticketGo/models"
+	"net/http"
 )
 
 // var DB *gorm.DB // должен быть инициализирован в main.go
@@ -18,7 +18,7 @@ func ShowMainPage(c *gin.Context) {
 	query.Find(&events)
 	// TODO: username из сессии
 	c.HTML(http.StatusOK, "index.html", gin.H{
-		"events": events,
+		"events":   events,
 		"username": c.GetString("username"),
 	})
 }
