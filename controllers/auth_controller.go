@@ -7,6 +7,7 @@ import (
 	"github.com/maxsidorov/ticketGo/service"
 	"gorm.io/gorm"
 	"net/http"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var DB *gorm.DB // должен быть инициализирован в main.go
@@ -28,9 +29,16 @@ func ShowRegisterPage(c *gin.Context) {
 func Login(c *gin.Context) {
 	session := sessions.Default(c)
 	username := c.PostForm("username")
+	userpass := c.PostForm("userpass")
 	var user models.User
 	if err := DB.Where("username = ?", username).First(&user).Error; err != nil {
 		session.AddFlash("Пользователь не найден")
+		session.Save()
+		c.Redirect(http.StatusFound, "/login")
+		return
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(userpass)); err != nil {
+		session.AddFlash("Неверный пароль")
 		session.Save()
 		c.Redirect(http.StatusFound, "/login")
 		return
@@ -39,16 +47,22 @@ func Login(c *gin.Context) {
 	session.Set("username", user.Username)
 	session.Save()
 	c.Redirect(http.StatusFound, "/")
-
 }
 
 func Register(c *gin.Context) {
 	session := sessions.Default(c)
 	username := c.PostForm("username")
-	//userpass := c.PostForm("userpass")
+	userpass := c.PostForm("userpass")
 	errName, username := service.ValidateName(username)
 	if errName != nil {
 		session.AddFlash(errName.Error())
+		session.Save()
+		c.Redirect(http.StatusFound, "/register")
+		return
+	}
+	errPass, userpass := service.ValidatePassword(userpass)
+	if errPass != nil {
+		session.AddFlash(errPass.Error())
 		session.Save()
 		c.Redirect(http.StatusFound, "/register")
 		return
@@ -61,8 +75,14 @@ func Register(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/register")
 		return
 	}
-	//поле пароля
-	user := models.User{Username: username}
+	hash, err := bcrypt.GenerateFromPassword([]byte(userpass), bcrypt.DefaultCost)
+	if err != nil {
+		session.AddFlash("Ошибка при обработке пароля")
+		session.Save()
+		c.Redirect(http.StatusFound, "/register")
+		return
+	}
+	user := models.User{Username: username, Password: string(hash), IsAdmin: false}
 	if err := DB.Create(&user).Error; err != nil {
 		session.AddFlash("Ошибка регистрации")
 		session.Save()
