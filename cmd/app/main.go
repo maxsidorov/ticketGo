@@ -23,7 +23,9 @@ func main() {
 		log.Fatal("Failed to connect to database")
 	}
 	// Миграция моделей
-	db.AutoMigrate(&models.Event{}, &models.User{}, &models.Ticket{}, &models.UserTicket{})
+	if err := db.AutoMigrate(&models.Event{}, &models.User{}, &models.Ticket{}, &models.UserTicket{}); err != nil {
+		log.Fatal("Failed to migrate database")
+	}
 
 	controllers.DB = db
 
