@@ -24,3 +24,21 @@ func ValidateName(name string) (error, string) {
 
 	return nil, name
 }
+
+func ValidatePassword(name string) (error, string) {
+	if len(name) < 8 || len(name) > 50 {
+		return errors.New("Пароль должен содержать не менее 8 и не более 50 символов!"), name
+	}
+	for _, r := range name {
+		if !unicode.IsLetter(r) && r != ' ' && r != '\'' && r != '-' {
+			return errors.New("Пароль содержит недопустимые символы!"), name
+		}
+	}
+	if strings.Contains(name, "  ") {
+		return errors.New("Пароль не может содержать несколько пробелов подряд!"), name
+	}
+	if strings.TrimSpace(name) != name {
+		return errors.New("Пароль не должен начинаться или заканчиваться пробелом!"), name
+	}
+	return nil, name
+}

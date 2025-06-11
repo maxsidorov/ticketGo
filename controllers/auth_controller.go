@@ -45,6 +45,7 @@ func Login(c *gin.Context) {
 func Register(c *gin.Context) {
 	session := sessions.Default(c)
 	username := c.PostForm("username")
+	//userpass := c.PostForm("userpass")
 	errName, username := service.ValidateName(username)
 	if errName != nil {
 		session.AddFlash(errName.Error())
@@ -60,6 +61,7 @@ func Register(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/register")
 		return
 	}
+	//поле пароля
 	user := models.User{Username: username}
 	if err := DB.Create(&user).Error; err != nil {
 		session.AddFlash("Ошибка регистрации")
