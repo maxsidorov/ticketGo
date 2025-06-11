@@ -1,9 +1,9 @@
 package service
 
 import (
+	"errors"
 	"github.com/maxsidorov/ticketGo/models"
 	"github.com/maxsidorov/ticketGo/storage"
-	"errors"
 	"time"
 )
 
@@ -23,8 +23,12 @@ func (s *EventService) CreateEvent(event *models.Event) (uint, error) {
 }
 
 func (s *EventService) GetEvents(page, pageSize int) ([]models.Event, error) {
-	if page < 1 { page = 1 }
-	if pageSize < 1 || pageSize > 100 { pageSize = 10 }
+	if page < 1 {
+		page = 1
+	}
+	if pageSize < 1 || pageSize > 100 {
+		pageSize = 10
+	}
 	return s.storage.GetAll(page, pageSize)
 }
 
@@ -33,7 +37,7 @@ func (s *EventService) GetEvent(id int) (*models.Event, error) {
 }
 
 func (s *EventService) UpdateEvent(event *models.Event) error {
-	if event.Date.Before(time.Now()) {
+	if event.DateTime.Before(time.Now()) {
 		return errors.New("cannot update past events")
 	}
 	return s.storage.Update(event)

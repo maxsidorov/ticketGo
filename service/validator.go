@@ -1,0 +1,26 @@
+package service
+
+import (
+	"errors"
+	"strings"
+	"unicode"
+)
+
+func ValidateName(name string) (error, string) {
+	if len(name) < 8 || len(name) > 50 {
+		return errors.New("Имя должно содержать не менее 8 и не более 50 символов!"), name
+	}
+	for _, r := range name {
+		if !unicode.IsLetter(r) && r != ' ' && r != '\'' && r != '-' {
+			return errors.New("Имя содержит недопустимые символы!"), name
+		}
+	}
+	if strings.Contains(name, "  ") {
+		return errors.New("Имя не может содержать несколько пробелов подряд!"), name
+	}
+	if strings.TrimSpace(name) != name {
+		return errors.New("Имя не должно начинаться или заканчиваться пробелом!"), name
+	}
+
+	return nil, name
+}

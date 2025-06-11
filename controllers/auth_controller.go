@@ -1,11 +1,12 @@
 package controllers
 
 import (
-	"net/http"
-	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/sessions"
+	"github.com/gin-gonic/gin"
 	"github.com/maxsidorov/ticketGo/models"
+	"github.com/maxsidorov/ticketGo/service"
 	"gorm.io/gorm"
+	"net/http"
 )
 
 var DB *gorm.DB // должен быть инициализирован в main.go
@@ -38,13 +39,15 @@ func Login(c *gin.Context) {
 	session.Set("username", user.Username)
 	session.Save()
 	c.Redirect(http.StatusFound, "/")
+
 }
 
 func Register(c *gin.Context) {
 	session := sessions.Default(c)
 	username := c.PostForm("username")
-	if username == "" {
-		session.AddFlash("Имя пользователя не может быть пустым")
+	errName, username := service.ValidateName(username)
+	if errName != nil {
+		session.AddFlash(errName.Error())
 		session.Save()
 		c.Redirect(http.StatusFound, "/register")
 		return
@@ -74,4 +77,4 @@ func Logout(c *gin.Context) {
 	session.Clear()
 	session.Save()
 	c.Redirect(http.StatusFound, "/")
-} 
+}
