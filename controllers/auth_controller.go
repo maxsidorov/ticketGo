@@ -5,9 +5,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/maxsidorov/ticketGo/models"
 	"github.com/maxsidorov/ticketGo/service"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"net/http"
-	"golang.org/x/crypto/bcrypt"
 )
 
 var DB *gorm.DB // должен быть инициализирован в main.go
@@ -82,7 +82,7 @@ func Register(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/register")
 		return
 	}
-	user := models.User{Username: username, Password: string(hash), IsAdmin: false}
+	user := models.User{Username: username, Password: string(hash), AdminLevel: 0}
 	if err := DB.Create(&user).Error; err != nil {
 		session.AddFlash("Ошибка регистрации")
 		session.Save()
