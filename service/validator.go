@@ -11,7 +11,7 @@ func ValidateName(name string) (error, string) {
 		return errors.New("Имя должно содержать не менее 8 и не более 50 символов!"), name
 	}
 	for _, r := range name {
-		if !unicode.IsLetter(r) && r != ' ' && r != '\'' && r != '-' {
+		if !unicode.IsLetter(r) && !unicode.IsDigit(r) && r != ' ' && r != '\'' && r != '-' {
 			return errors.New("Имя содержит недопустимые символы!"), name
 		}
 	}
@@ -30,7 +30,7 @@ func ValidatePassword(name string) (error, string) {
 		return errors.New("Пароль должен содержать не менее 8 и не более 50 символов!"), name
 	}
 	for _, r := range name {
-		if !unicode.IsLetter(r) && r != ' ' && r != '\'' && r != '-' {
+		if !unicode.IsLetter(r) && !unicode.IsDigit(r) && r != ' ' && r != '\'' && r != '-' {
 			return errors.New("Пароль содержит недопустимые символы!"), name
 		}
 	}
