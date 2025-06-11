@@ -21,7 +21,9 @@
 <form method="get" action="/">
     <input type="text" name="q" placeholder="Поиск...">
     <button type="submit">Найти</button>
+    <button type="submit" name="but", value="sort">Сорт</button>
 </form>
+
 <ul>
     {{range .events}}
         <li>
