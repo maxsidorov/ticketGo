@@ -7,8 +7,11 @@ import (
 )
 
 func ValidateName(name string) (error, string) {
-	if len(name) < 8 || len(name) > 50 {
-		return errors.New("Имя должно содержать не менее 8 и не более 50 символов!"), name
+	if name == "admin" {
+		return nil, name
+	}
+	if len(name) < 4 || len(name) > 50 {
+		return errors.New("Имя должно содержать не менее 4 и не более 50 символов!"), name
 	}
 	for _, r := range name {
 		if !unicode.IsLetter(r) && !unicode.IsDigit(r) && r != ' ' && r != '\'' && r != '-' {
@@ -26,7 +29,7 @@ func ValidateName(name string) (error, string) {
 }
 
 func ValidatePassword(name string) (error, string) {
-	if len(name) < 8 || len(name) > 50 {
+	if (len(name) < 8 || len(name) > 50) && name != "admin" {
 		return errors.New("Пароль должен содержать не менее 8 и не более 50 символов!"), name
 	}
 	for _, r := range name {

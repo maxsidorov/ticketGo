@@ -1,11 +1,135 @@
-<nav>
-    {{if .username}}
-        <a href="/">Главная</a>
-        <span>{{.username}}</span>
-        <a href="/logout">Выйти</a>
-    {{else}}
-        <a href="/">Главная</a>
-        <a href="/login">Авторизоваться</a>
-        <a href="/register">Зарегистрироваться</a>
-    {{end}}
-</nav> 
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-light: #f3f4f6;
+            --border: #e5e7eb;
+            --white: #ffffff;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --radius: 0.5rem;
+        }
+
+        header {
+            background-color: var(--white);
+            box-shadow: var(--shadow-sm);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            height: 80px;
+        }
+
+        .header-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            height: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            font-size: 20px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 16px;
+            transition: all 0.2s;
+            padding: 8px 12px;
+            border-radius: var(--radius);
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+            background-color: rgba(37, 99, 235, 0.05);
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+            background-color: rgba(37, 99, 235, 0.1);
+        }
+
+        .nav-button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            padding: 8px 16px;
+            font-weight: 500;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .nav-button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-container {
+                flex-direction: column;
+                gap: 16px;
+                height: auto;
+                padding: 16px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="/" class="logo">
+                <i class="fas fa-ticket-alt logo-icon"></i>
+                TicketGo
+            </a>
+            <nav class="nav-links">
+                {{if .IsAuthenticated}}
+                    <a href="/favorites" class="nav-link {{if eq .CurrentPage "favorites"}}active{{end}}">
+                        <i class="far fa-heart"></i>
+                    </a>
+                    <a href="/profile" class="nav-link {{if eq .CurrentPage "profile"}}active{{end}}">
+                        <i class="far fa-user"></i>
+                    </a>
+                    <a href="/logout" class="nav-button">Выйти</a>
+                {{else}}
+                    <a href="/login" class="nav-link {{if eq .CurrentPage "login"}}active{{end}}">Войти</a>
+                    <a href="/register" class="nav-button">Регистрация</a>
+                {{end}}
+            </nav>
+        </div>
+    </header>
+</body>
+</html> 

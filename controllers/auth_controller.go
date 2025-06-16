@@ -4,94 +4,156 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/maxsidorov/ticketGo/models"
+	"github.com/maxsidorov/ticketGo/db"
 	"github.com/maxsidorov/ticketGo/service"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 	"net/http"
+	"time"
 )
 
-var DB *gorm.DB // должен быть инициализирован в main.go
+// checkPasswordHash проверяет соответствие хеша пароля
+func checkPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}
+
+// hashPassword создает хеш пароля
+func hashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
 
 func ShowLoginPage(c *gin.Context) {
-	session := sessions.Default(c)
-	flash := session.Flashes()
-	session.Save()
-	c.HTML(http.StatusOK, "login.html", gin.H{"flash": flash})
+	c.HTML(http.StatusOK, "login.html", gin.H{})
 }
 
 func ShowRegisterPage(c *gin.Context) {
-	session := sessions.Default(c)
-	flash := session.Flashes()
-	session.Save()
-	c.HTML(http.StatusOK, "register.html", gin.H{"flash": flash})
+	c.HTML(http.StatusOK, "register.html", gin.H{})
 }
 
 func Login(c *gin.Context) {
-	session := sessions.Default(c)
-	username := c.PostForm("username")
-	userpass := c.PostForm("userpass")
+	usernameOrEmail := c.PostForm("username")
+	password := c.PostForm("password")
+
+	// Ищем пользователя по имени пользователя или email
 	var user models.User
-	if err := DB.Where("username = ?", username).First(&user).Error; err != nil {
-		session.AddFlash("Пользователь не найден")
-		session.Save()
-		c.Redirect(http.StatusFound, "/login")
+	if err := db.DB.Where("username = ? OR email = ?", usernameOrEmail, usernameOrEmail).First(&user).Error; err != nil {
+		c.HTML(http.StatusUnauthorized, "login.html", gin.H{
+			"error":         "Неверное имя пользователя/email или пароль",
+			"IsAuthenticated": false,
+		})
 		return
 	}
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(userpass)); err != nil {
-		session.AddFlash("Неверный пароль")
-		session.Save()
-		c.Redirect(http.StatusFound, "/login")
+
+	// Проверяем пароль
+	if !checkPasswordHash(password, user.Password) {
+		c.HTML(http.StatusUnauthorized, "login.html", gin.H{
+			"error":         "Неверное имя пользователя/email или пароль",
+			"IsAuthenticated": false,
+		})
 		return
 	}
-	session.Set("user_id", user.ID)
+
+	// Сохраняем информацию в сессии
+	session := sessions.Default(c)
 	session.Set("username", user.Username)
-	session.Save()
+	session.Set("user_id", int(user.ID))
+	if err := session.Save(); err != nil {
+		c.HTML(http.StatusInternalServerError, "login.html", gin.H{
+			"error":         "Ошибка при сохранении сессии",
+			"IsAuthenticated": false,
+		})
+		return
+	}
+
 	c.Redirect(http.StatusFound, "/")
 }
 
 func Register(c *gin.Context) {
-	session := sessions.Default(c)
 	username := c.PostForm("username")
-	userpass := c.PostForm("userpass")
-	errName, username := service.ValidateName(username)
-	if errName != nil {
-		session.AddFlash(errName.Error())
-		session.Save()
-		c.Redirect(http.StatusFound, "/register")
+	email := c.PostForm("email")
+	password := c.PostForm("password")
+	confirmPassword := c.PostForm("confirm_password")
+
+	// Валидация имени пользователя
+	if err, _ := service.ValidateName(username); err != nil {
+		c.HTML(http.StatusBadRequest, "register.html", gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
-	errPass, userpass := service.ValidatePassword(userpass)
-	if errPass != nil {
-		session.AddFlash(errPass.Error())
-		session.Save()
-		c.Redirect(http.StatusFound, "/register")
+
+	// Валидация пароля
+	if err, _ := service.ValidatePassword(password); err != nil {
+		c.HTML(http.StatusBadRequest, "register.html", gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
-	var count int64
-	DB.Model(&models.User{}).Where("username = ?", username).Count(&count)
-	if count > 0 {
-		session.AddFlash("Пользователь с таким именем уже существует")
-		session.Save()
-		c.Redirect(http.StatusFound, "/register")
+
+	// Проверяем совпадение паролей
+	if password != confirmPassword {
+		c.HTML(http.StatusBadRequest, "register.html", gin.H{
+			"error": "Пароли не совпадают",
+		})
 		return
 	}
-	hash, err := bcrypt.GenerateFromPassword([]byte(userpass), bcrypt.DefaultCost)
+
+	// Проверяем, существует ли пользователь с таким именем
+	var existingUser models.User
+	if err := db.DB.Where("username = ?", username).First(&existingUser).Error; err == nil {
+		c.HTML(http.StatusBadRequest, "register.html", gin.H{
+			"error": "Пользователь с таким именем уже существует",
+		})
+		return
+	}
+
+	// Проверяем, существует ли пользователь с таким email
+	if err := db.DB.Where("email = ?", email).First(&existingUser).Error; err == nil {
+		c.HTML(http.StatusBadRequest, "register.html", gin.H{
+			"error": "Пользователь с таким email уже существует",
+		})
+		return
+	}
+
+	// Создаем хеш пароля
+	hashedPassword, err := hashPassword(password)
 	if err != nil {
-		session.AddFlash("Ошибка при обработке пароля")
-		session.Save()
-		c.Redirect(http.StatusFound, "/register")
+		c.HTML(http.StatusInternalServerError, "register.html", gin.H{
+			"error": "Ошибка при создании пользователя",
+		})
 		return
 	}
-	user := models.User{Username: username, Password: string(hash), AdminLevel: 0}
-	if err := DB.Create(&user).Error; err != nil {
-		session.AddFlash("Ошибка регистрации")
-		session.Save()
-		c.Redirect(http.StatusFound, "/register")
+
+	// Создаем нового пользователя
+	user := models.User{
+		Username:   username,
+		Email:      email,
+		Password:   hashedPassword,
+		AdminLevel: 0,
+		CreatedAt:  time.Now(),
+		UpdatedAt:  time.Now(),
+	}
+
+	if err := db.DB.Create(&user).Error; err != nil {
+		c.HTML(http.StatusInternalServerError, "register.html", gin.H{
+			"error": "Ошибка при создании пользователя",
+		})
 		return
 	}
-	session.AddFlash("Регистрация успешна! Войдите.")
-	session.Save()
-	c.Redirect(http.StatusFound, "/login")
+
+	// Автоматически входим в систему после регистрации
+	session := sessions.Default(c)
+	session.Set("username", username)
+	session.Set("user_id", int(user.ID))
+	if err := session.Save(); err != nil {
+		c.HTML(http.StatusInternalServerError, "register.html", gin.H{
+			"error": "Ошибка при сохранении сессии",
+		})
+		return
+	}
+
+	c.Redirect(http.StatusFound, "/")
 }
 
 func Logout(c *gin.Context) {
@@ -99,4 +161,12 @@ func Logout(c *gin.Context) {
 	session.Clear()
 	session.Save()
 	c.Redirect(http.StatusFound, "/")
+}
+
+func CheckAuth(c *gin.Context) {
+	session := sessions.Default(c)
+	userID := session.Get("user_id")
+	c.JSON(http.StatusOK, gin.H{
+		"authenticated": userID != nil,
+	})
 }

@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль — TicketGo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/2.0.0/modern-normalize.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563EB;
+            --primary-hover: #1D4ED8;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --bg-light: #F9FAFB;
+            --border: #E5E7EB;
+            --white: #FFFFFF;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --radius: 8px;
+            --success: #10B981;
+            --error: #EF4444;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            background-color: var(--bg-light);
+            margin: 0;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            width: 100%;
+        }
+
+        main {
+            padding: 20px 0;
+            margin-top: 80px;
+            width: 100%;
+        }
+
+        .profile-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 32px;
+        }
+
+        .profile-sidebar {
+            background-color: var(--white);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            height: fit-content;
+        }
+
+        .profile-nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .profile-nav-item {
+            margin-bottom: 8px;
+        }
+
+        .profile-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: var(--radius);
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .profile-nav-link:hover {
+            background-color: var(--bg-light);
+            color: var(--primary);
+        }
+
+        .profile-nav-link.active {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        .profile-nav-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .profile-content {
+            background-color: var(--white);
+            border-radius: var(--radius);
+            padding: 32px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .profile-header {
+            margin-bottom: 32px;
+        }
+
+        .profile-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .profile-email {
+            color: var(--text-secondary);
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+        }
+
+        .tickets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .ticket-card {
+            background-color: var(--white);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .ticket-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .ticket-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .ticket-content {
+            padding: 20px;
+        }
+
+        .ticket-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .ticket-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .ticket-info p {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .ticket-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-upcoming {
+            background-color: #ECFDF5;
+            color: var(--success);
+        }
+
+        .status-past {
+            background-color: #FEF2F2;
+            color: var(--error);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            background-color: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .empty-state p {
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        /* Form styles */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-button {
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius);
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .form-button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .form-error {
+            color: var(--error);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .form-success {
+            color: var(--success);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .profile-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-sidebar {
+                margin-bottom: 24px;
+            }
+        }
+
+        .password-input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .toggle-password:hover {
+            color: #333;
+        }
+
+        .username {
+            color: #666;
+            font-size: 1.1em;
+            margin-top: 5px;
+        }
+
+        .settings-section {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .settings-section h2 {
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .settings-form {
+            max-width: 500px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .form-group input:read-only {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+
+        .password-input-group {
+            position: relative;
+        }
+
+        .password-input-group input {
+            padding-right: 40px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            padding: 5px;
+            transition: color 0.3s;
+        }
+
+        .toggle-password:hover {
+            color: #007bff;
+        }
+
+        .save-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .save-button:hover {
+            background: #0056b3;
+        }
+
+        .save-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .event-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .event-card {
+            transition: transform 0.2s;
+        }
+
+        .event-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            padding: 5px;
+            transition: color 0.3s;
+            z-index: 10;
+        }
+
+        .toggle-password:hover {
+            color: #007bff;
+        }
+
+        .toggle-password i {
+            pointer-events: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(20px); }
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .input-group input {
+            flex: 1;
+        }
+
+        .save-field-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            white-space: nowrap;
+        }
+
+        .save-field-button:hover {
+            background: #0056b3;
+        }
+
+        .save-field-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    {{template "navbar.html" .}}
+
+    <main>
+        <div class="container">
+            <div class="profile-layout">
+                <aside class="profile-sidebar">
+                    <ul class="profile-nav">
+                        <li class="profile-nav-item">
+                            <a href="#tickets" class="profile-nav-link active" data-section="tickets">
+                                <i class="fas fa-ticket-alt"></i>
+                                Билеты
+                            </a>
+                        </li>
+                        <li class="profile-nav-item">
+                            <a href="#settings" class="profile-nav-link" data-section="settings">
+                                <i class="fas fa-cog"></i>
+                                Настройки
+                            </a>
+                        </li>
+                    </ul>
+                </aside>
+
+                <div class="profile-content">
+                    <div class="profile-header">
+                        <h1>Профиль</h1>
+                        <p class="username">{{.Username}}</p>
+                    </div>
+
+                    <section id="tickets-section">
+                        <h2 class="section-title">Предстоящие мероприятия</h2>
+                        {{if .UpcomingTickets}}
+                        <div class="tickets-grid">
+                            {{range .UpcomingTickets}}
+                            <div class="ticket-card">
+                                <img src="{{.Event.Image}}" alt="{{.Event.Title}}" class="ticket-image" onerror="this.src='/static/images/placeholder.jpg'">
+                                <div class="ticket-content">
+                                    <h3 class="ticket-title">{{.Event.Title}}</h3>
+                                    <div class="ticket-info">
+                                        <p><i class="fas fa-calendar"></i> {{.Event.DateTime.Format "02.01.2006 15:04"}}</p>
+                                        <p><i class="fas fa-map-marker-alt"></i> {{.Event.Location}}</p>
+                                        <p><i class="fas fa-ticket-alt"></i> Количество: {{.Quantity}}</p>
+                                    </div>
+                                    <span class="ticket-status status-upcoming">
+                                        <i class="fas fa-clock"></i>
+                                        Предстоящее
+                                    </span>
+                                </div>
+                            </div>
+                            {{end}}
+                        </div>
+                        {{else}}
+                        <div class="empty-state">
+                            <i class="fas fa-ticket-alt"></i>
+                            <p>У вас пока нет билетов на предстоящие мероприятия</p>
+                        </div>
+                        {{end}}
+
+                        <h2 class="section-title">Прошедшие мероприятия</h2>
+                        {{if .PastTickets}}
+                        <div class="tickets-grid">
+                            {{range .PastTickets}}
+                            <div class="ticket-card">
+                                <img src="{{.Event.Image}}" alt="{{.Event.Title}}" class="ticket-image" onerror="this.src='/static/images/placeholder.jpg'">
+                                <div class="ticket-content">
+                                    <h3 class="ticket-title">{{.Event.Title}}</h3>
+                                    <div class="ticket-info">
+                                        <p><i class="fas fa-calendar"></i> {{.Event.DateTime.Format "02.01.2006 15:04"}}</p>
+                                        <p><i class="fas fa-map-marker-alt"></i> {{.Event.Location}}</p>
+                                        <p><i class="fas fa-ticket-alt"></i> Количество: {{.Quantity}}</p>
+                                    </div>
+                                    <span class="ticket-status status-past">
+                                        <i class="fas fa-check"></i>
+                                        Прошедшее
+                                    </span>
+                                </div>
+                            </div>
+                            {{end}}
+                        </div>
+                        {{else}}
+                        <div class="empty-state">
+                            <i class="fas fa-history"></i>
+                            <p>У вас пока нет билетов на прошедшие мероприятия</p>
+                        </div>
+                        {{end}}
+                    </section>
+
+                    <div class="settings-section" id="settings-section" style="display: none;">
+                        <h2>Настройки профиля</h2>
+                        <form id="settings-form" class="settings-form">
+                            <div class="form-group">
+                                <label for="username">Имя пользователя</label>
+                                <div class="input-group">
+                                    <input type="text" id="username" name="username" value="{{.User.Username}}" required>
+                                    <button type="button" class="save-field-button" onclick="saveField('username')">Сохранить</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <div class="input-group">
+                                    <input type="email" id="email" name="email" value="{{.User.Email}}" required>
+                                    <button type="button" class="save-field-button" onclick="saveField('email')">Сохранить</button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="new_password">Новый пароль</label>
+                                <div class="input-group">
+                                    <input type="password" id="new_password" name="new_password" placeholder="Введите новый пароль">
+                                    <input type="password" id="confirm_password" name="confirm_password" placeholder="Подтвердите пароль">
+                                    <button type="button" class="save-field-button" onclick="saveField('password')">Сохранить</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Переключение между разделами
+        document.querySelectorAll('.profile-nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const section = link.getAttribute('data-section');
+                
+                // Обновляем активную ссылку
+                document.querySelectorAll('.profile-nav-link').forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                
+                // Показываем нужную секцию
+                document.getElementById('tickets-section').style.display = section === 'tickets' ? 'block' : 'none';
+                document.getElementById('settings-section').style.display = section === 'settings' ? 'block' : 'none';
+            });
+        });
+
+        async function saveField(fieldType) {
+            const formData = {
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value
+            };
+
+            // Проверяем обязательные поля
+            if (fieldType === 'username' && !formData.username) {
+                showToast('error', 'Имя пользователя не может быть пустым');
+                return;
+            }
+
+            if (fieldType === 'email' && !formData.email) {
+                showToast('error', 'Email не может быть пустым');
+                return;
+            }
+
+            if (fieldType === 'password') {
+                const newPassword = document.getElementById('new_password').value;
+                const confirmPassword = document.getElementById('confirm_password').value;
+
+                if (!newPassword) {
+                    showToast('error', 'Введите новый пароль');
+                    return;
+                }
+
+                if (newPassword !== confirmPassword) {
+                    showToast('error', 'Пароли не совпадают');
+                    return;
+                }
+
+                formData.new_password = newPassword;
+                formData.confirm_password = confirmPassword;
+            }
+
+            try {
+                const response = await fetch('/profile/update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    let successMessage = 'Настройки успешно сохранены';
+                    if (fieldType === 'password') {
+                        successMessage = 'Пароль успешно изменен';
+                        document.getElementById('new_password').value = '';
+                        document.getElementById('confirm_password').value = '';
+                    } else if (fieldType === 'username') {
+                        document.querySelector('.username').textContent = formData.username;
+                    }
+                    showToast('success', successMessage);
+                } else {
+                    // Обработка различных типов ошибок
+                    let errorMessage = data.error;
+                    if (data.error === 'username already exists') {
+                        errorMessage = 'Это имя пользователя уже занято';
+                    } else if (data.error === 'email already exists') {
+                        errorMessage = 'Этот email уже используется';
+                    } else if (data.error === 'invalid password format') {
+                        errorMessage = 'Пароль должен содержать минимум 8 символов, включая заглавные и строчные буквы, цифры и специальные символы';
+                    } else if (data.error === 'invalid email format') {
+                        errorMessage = 'Неверный формат email';
+                    }
+                    showToast('error', errorMessage);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('error', 'Произошла ошибка при сохранении настроек. Пожалуйста, попробуйте позже.');
+            }
+        }
+
+        // Функция для отображения уведомлений
+        function showToast(type, message) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            // Добавляем стили для уведомления
+            toast.style.position = 'fixed';
+            toast.style.bottom = '20px';
+            toast.style.right = '20px';
+            toast.style.padding = '10px 20px';
+            toast.style.borderRadius = '4px';
+            toast.style.color = 'white';
+            toast.style.zIndex = '1000';
+            toast.style.animation = 'fadeIn 0.3s, fadeOut 0.3s 2.7s';
+            toast.style.backgroundColor = type === 'success' ? '#28a745' : '#dc3545';
+            toast.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.nextElementSibling.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // При загрузке страницы заполняем текущий пароль звездочками
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPasswordInput = document.getElementById('current_password');
+            if (currentPasswordInput) {
+                currentPasswordInput.value = '••••••••';
+            }
+        });
+    </script>
+</body>
+</html> 

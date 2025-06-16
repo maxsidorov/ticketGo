@@ -2,45 +2,466 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Главная - ticketGo</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TicketGo — Билеты на мероприятия</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/2.0.0/modern-normalize.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563EB;
+            --primary-hover: #1D4ED8;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --bg-light: #F9FAFB;
+            --border: #E5E7EB;
+            --white: #FFFFFF;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            background-color: var(--bg-light);
+            margin: 0;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            width: 100%;
+        }
+
+        /* Main content */
+        main {
+            padding: 20px 0;
+            margin-top: 80px;
+            width: 100%;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            margin-bottom: 32px;
+            padding-top: 20px;
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 32px;
+        }
+
+        /* Search */
+        .search-container {
+            max-width: 600px;
+            margin: 0 auto 40px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 24px;
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            font-size: 16px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s;
+            padding-right: 50px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .filters-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 0 1rem;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-tab {
+            padding: 0.6rem 1.2rem;
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--primary);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .filter-tab:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(255, 75, 43, 0.2);
+        }
+
+        .filter-tab.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 2px 4px rgba(255, 75, 43, 0.2);
+        }
+
+        .sort-container {
+            position: relative;
+            min-width: 220px;
+        }
+
+        .sort-select {
+            width: 100%;
+            padding: 0.6rem 2.5rem 0.6rem 1rem;
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--primary);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23FF4B2B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1rem;
+        }
+
+        .sort-select:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(255, 75, 43, 0.2);
+        }
+
+        .sort-select:hover option {
+            background-color: white;
+            color: var(--primary);
+        }
+
+        .sort-select option {
+            background-color: white;
+            color: var(--primary);
+            padding: 0.75rem;
+            font-size: 0.95rem;
+        }
+
+        /* Events grid */
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .event-card {
+            background-color: var(--white);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .event-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .event-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .event-content {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .event-date {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .event-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .event-location {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .event-price {
+            margin-top: auto;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 40px;
+        }
+
+        .pagination-link {
+            padding: 8px 16px;
+            border-radius: var(--radius);
+            background-color: var(--white);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .pagination-link:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .pagination-link.active {
+            background-color: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 36px;
+            }
+
+            .events-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            }
+
+            .filters-container {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+                padding: 0;
+            }
+
+            .filter-tabs {
+                justify-content: center;
+                gap: 0.5rem;
+            }
+
+            .filter-tab {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .sort-container {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .sort-select {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 28px;
+            }
+
+            .hero-subtitle {
+                font-size: 16px;
+            }
+
+            .events-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-<nav>
-    {{if .username}}
-        <a href="/">Главная</a>
-        <span>{{.username}}</span>
-        <a href="/logout">Выйти</a>
-    {{else}}
-        <a href="/">Главная</a>
-        <a href="/login">Авторизоваться</a>
-        <a href="/register">Зарегистрироваться</a>
-    {{end}}
-</nav>
-<h1>Доступные мероприятия</h1>
-<form method="get" action="/">
-    <input type="text" name="q" placeholder="Поиск...">
-    <button type="submit">Найти</button>
-</form>
-<form method="post" action="/">
-    <select id="phone" name="phone">
-        <option value="SortName">По названию</option>
-        <option value="SortPrice">По цене</option>
-        <option value="SortDate">По дате</option>
-        <option value="SortCategory">По категории*</option>
-    </select>
-    <button type="submit" name="but", value="sort">Сорт</button>
-</form>
-<input type="date" атрибуты>
-<ul>
-    {{range .events}}
-        <li>
-            <b>{{.Title}}</b> — {{.DateTime}} — {{.Location}} — {{.Price}}₽
-            <br>{{.Description}}
-        </li>
-    {{else}}
-        <li>Нет мероприятий</li>
-    {{end}}
-</ul>
+    {{template "navbar.html" .}}
+    <main>
+        <div class="container">
+            <section class="hero">
+                <h1 class="hero-title">Найдите билеты на лучшие мероприятия</h1>
+                <p class="hero-subtitle">Концерты, спектакли, выставки и многое другое в вашем городе</p>
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Поиск мероприятий...">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+            </section>
+
+            <div class="filters-container">
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-category="all">Все</button>
+                    <button class="filter-tab" data-category="concert">Концерты</button>
+                    <button class="filter-tab" data-category="theater">Театр</button>
+                    <button class="filter-tab" data-category="exhibition">Выставки</button>
+                    <button class="filter-tab" data-category="sport">Спорт</button>
+                    <button class="filter-tab" data-category="kids">Детям</button>
+                </div>
+                <div class="sort-container">
+                    <select id="sortSelect" class="sort-select" onchange="updateSort(this.value)">
+                        <option value="title">По названию</option>
+                        <option value="popular">По популярности</option>
+                        <option value="date">По дате (сначала ближайшие)</option>
+                        <option value="date-desc">По дате (сначала дальние)</option>
+                        <option value="price-asc">По цене (по возрастанию)</option>
+                        <option value="price-desc">По цене (по убыванию)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="events-grid">
+                {{range .Events}}
+                <a href="/events/{{.ID}}" class="event-card">
+                    <img src="{{.Image}}" alt="{{.Title}}" class="event-image">
+                    <div class="event-content">
+                        <div class="event-date">
+                            <i class="far fa-calendar-alt"></i>
+                            {{.DateTime.Format "02.01.2006"}}
+                        </div>
+                        <h3 class="event-title">{{.Title}}</h3>
+                        <div class="event-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            {{.Location}}
+                        </div>
+                        <div class="event-price">{{.Price}} ₽</div>
+                    </div>
+                </a>
+                {{end}}
+            </div>
+        </div>
+    </main>
+    <script>
+        // Search functionality
+        const searchInput = document.querySelector('.search-input');
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const eventCards = document.querySelectorAll('.event-card');
+            
+            eventCards.forEach(card => {
+                const title = card.querySelector('.event-title').textContent.toLowerCase();
+                if (title.includes(searchTerm)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Sort functionality
+        function updateSort(value) {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('sort', value);
+            window.location.search = urlParams.toString();
+        }
+
+        // Category functionality
+        function updateCategory(category) {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('category', category);
+            window.location.search = urlParams.toString();
+        }
+
+        // Set active filter tab based on URL
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const category = urlParams.get('category') || 'all';
+            const sort = urlParams.get('sort') || 'date';
+            
+            // Set active category tab
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                if (tab.dataset.category === category) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            // Set active sort option
+            const sortSelect = document.getElementById('sortSelect');
+            if (sortSelect) {
+                sortSelect.value = sort;
+            }
+            
+            // Set search input value
+            const searchQuery = urlParams.get('search');
+            if (searchQuery) {
+                searchInput.value = searchQuery;
+            }
+        });
+
+        // Add click handlers for category tabs
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                updateCategory(this.dataset.category);
+            });
+        });
+    </script>
 </body>
 </html> 
