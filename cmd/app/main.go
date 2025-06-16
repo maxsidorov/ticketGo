@@ -48,5 +48,8 @@ func main() {
 
 	routes.RegisterRoutes(r)
 
-	r.Run(":" + cfg.Port)
+	if err = r.Run(":" + cfg.Port); err != nil {
+		log.Println(err)
+	}
+
 }
