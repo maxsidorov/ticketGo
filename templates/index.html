@@ -19,17 +19,15 @@
 </nav>
 <h1>Доступные мероприятия</h1>
 <form method="get" action="/">
-    <input type="text" name="q" placeholder="Поиск...">
-    <button type="submit">Найти</button>
-</form>
-<form method="post" action="/">
-    <select id="phone" name="phone">
+    <input type="text" name="search" placeholder="Поиск..." value="{{ .search }}">
+    <button type="submit" name="but_search" value="true">Найти</button>
+    <select name="sort">
         <option value="SortName">По названию</option>
         <option value="SortPrice">По цене</option>
         <option value="SortDate">По дате</option>
         <option value="SortCategory">По категории*</option>
     </select>
-    <button type="submit" name="but", value="sort">Сорт</button>
+    <button type="submit" name="but_sort", value="true">Сорт</button>
 </form>
 <input type="date" атрибуты>
 <ul>

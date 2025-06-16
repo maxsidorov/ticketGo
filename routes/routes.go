@@ -6,8 +6,7 @@ import (
 )
 
 func RegisterRoutes(r *gin.Engine) {
-	r.GET("/", controllers.ShowMainPage)
-	r.POST("/", controllers.MainPage)
+	r.GET("/", controllers.MainPage)
 	r.GET("/login", controllers.ShowLoginPage)
 	r.POST("/login", controllers.Login)
 	r.GET("/register", controllers.ShowRegisterPage)

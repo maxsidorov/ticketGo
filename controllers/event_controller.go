@@ -7,27 +7,21 @@ import (
 	"sort"
 )
 
-var events []models.Event
+func MainPage(c *gin.Context) {
+	but_search := c.Query("but_search")
+	search := c.Query("search")
+	but_sort := c.Query("but_sort")
+	type_sort := c.Query("sort")
 
-func ShowMainPage(c *gin.Context) {
-	q := c.Query("q")
+	var events []models.Event
+
 	query := DB
-	if q != "" {
-		query = query.Where("title ILIKE ?", "%"+q+"%")
+	if but_search != "" || search != "" {
+		query = query.Where("title ILIKE ?", "%"+search+"%")
 	}
 	query.Find(&events)
-	// TODO: username из сессии
-	c.HTML(http.StatusOK, "index.html", gin.H{
-		"events":   events,
-		"username": c.GetString("username"),
-	})
-}
-
-func MainPage(c *gin.Context) {
-	p := c.PostForm("but")
-	r := c.PostForm("phone")
-	if p != "" {
-		switch r {
+	if but_sort != "" {
+		switch type_sort {
 		case "SortName":
 			sort.Slice(events, func(i, j int) bool { return events[i].Title < events[j].Title })
 		case "SortPrice":
@@ -40,6 +34,7 @@ func MainPage(c *gin.Context) {
 	}
 	c.HTML(http.StatusOK, "index.html", gin.H{
 		"events":   events,
+		"search":   search,
 		"username": c.GetString("username"),
 	})
 }
