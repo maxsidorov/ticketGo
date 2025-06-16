@@ -28,8 +28,9 @@
         <option value="SortCategory">По категории*</option>
     </select>
     <button type="submit" name="but_sort", value="true">Сорт</button>
+    <input type="date" name="date_first" value="{{ .date_first }}" атрибуты>
+    <input type="date" name="date_second" value="{{ .date_last }}" атрибуты>
 </form>
-<input type="date" атрибуты>
 <ul>
     {{range .events}}
         <li>
