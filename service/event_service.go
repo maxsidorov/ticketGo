@@ -4,15 +4,20 @@ import (
 	"errors"
 	"github.com/maxsidorov/ticketGo/models"
 	"github.com/maxsidorov/ticketGo/storage"
+	"gorm.io/gorm"
 	"time"
 )
 
 type EventService struct {
 	storage *storage.EventStorage
+	db      *gorm.DB
 }
 
-func NewEventService(storage *storage.EventStorage) *EventService {
-	return &EventService{storage: storage}
+func NewEventService(storage *storage.EventStorage, db *gorm.DB) *EventService {
+	return &EventService{
+		storage: storage,
+		db:      db,
+	}
 }
 
 func (s *EventService) CreateEvent(event *models.Event) (uint, error) {
@@ -45,4 +50,15 @@ func (s *EventService) UpdateEvent(event *models.Event) error {
 
 func (s *EventService) DeleteEvent(id int) error {
 	return s.storage.Delete(id)
+}
+
+func (s *EventService) GetUserTicketsCount(eventID, userID int) (int, error) {
+	var count int64
+	err := s.db.Model(&models.UserTicket{}).
+		Where("event_id = ? AND user_id = ?", eventID, userID).
+		Count(&count).Error
+	if err != nil {
+		return 0, err
+	}
+	return int(count), nil
 }

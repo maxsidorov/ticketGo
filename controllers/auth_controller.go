@@ -57,7 +57,7 @@ func Login(c *gin.Context) {
 	// Сохраняем информацию в сессии
 	session := sessions.Default(c)
 	session.Set("username", user.Username)
-	session.Set("user_id", int(user.ID))
+	session.Set("user_id", user.ID)
 	if err := session.Save(); err != nil {
 		c.HTML(http.StatusInternalServerError, "login.html", gin.H{
 			"error":         "Ошибка при сохранении сессии",
@@ -145,7 +145,7 @@ func Register(c *gin.Context) {
 	// Автоматически входим в систему после регистрации
 	session := sessions.Default(c)
 	session.Set("username", username)
-	session.Set("user_id", int(user.ID))
+	session.Set("user_id", user.ID)
 	if err := session.Save(); err != nil {
 		c.HTML(http.StatusInternalServerError, "register.html", gin.H{
 			"error": "Ошибка при сохранении сессии",

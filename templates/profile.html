@@ -19,8 +19,6 @@
             --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
             --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
             --radius: 8px;
-            --success: #10B981;
-            --error: #EF4444;
         }
 
         * {
@@ -56,7 +54,7 @@
         }
 
         .profile-sidebar {
-            background-color: var(--white);
+            background: var(--white);
             border-radius: var(--radius);
             padding: 24px;
             box-shadow: var(--shadow-sm);
@@ -101,49 +99,48 @@
         }
 
         .profile-content {
-            background-color: var(--white);
+            background: var(--white);
             border-radius: var(--radius);
             padding: 32px;
             box-shadow: var(--shadow-sm);
         }
 
         .profile-header {
+            text-align: center;
             margin-bottom: 32px;
         }
 
-        .profile-title {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .profile-email {
-            color: var(--text-secondary);
+        .profile-header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
         }
 
         .section-title {
-            font-size: 20px;
+            font-size: 24px;
             font-weight: 600;
-            margin-bottom: 24px;
+            color: var(--text-primary);
+            margin: 0 0 24px 0;
         }
 
         .tickets-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 24px;
-            margin-bottom: 40px;
+            margin-bottom: 32px;
         }
 
         .ticket-card {
-            background-color: var(--white);
+            background: var(--white);
             border-radius: var(--radius);
             overflow: hidden;
             box-shadow: var(--shadow-sm);
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s ease;
         }
 
         .ticket-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-2px);
             box-shadow: var(--shadow-md);
         }
 
@@ -158,117 +155,116 @@
         }
 
         .ticket-title {
+            display: block;
             font-size: 18px;
             font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
             margin-bottom: 12px;
+        }
+
+        .ticket-title:hover {
+            color: var(--primary);
         }
 
         .ticket-info {
             display: flex;
             flex-direction: column;
             gap: 8px;
-            margin-bottom: 16px;
         }
 
         .ticket-info p {
             display: flex;
             align-items: center;
             gap: 8px;
-            color: var(--text-secondary);
             margin: 0;
-        }
-
-        .ticket-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-radius: 20px;
+            color: var(--text-secondary);
             font-size: 14px;
-            font-weight: 500;
         }
 
-        .status-upcoming {
-            background-color: #ECFDF5;
-            color: var(--success);
+        .ticket-info i {
+            width: 16px;
+            color: var(--primary);
         }
 
-        .status-past {
-            background-color: #FEF2F2;
-            color: var(--error);
-        }
-
-        .empty-state {
+        .no-tickets {
             text-align: center;
-            padding: 48px 24px;
-            background-color: var(--white);
+            color: var(--text-secondary);
+            padding: 32px;
+            background: var(--white);
             border-radius: var(--radius);
             box-shadow: var(--shadow-sm);
         }
 
-        .empty-state i {
-            font-size: 48px;
-            color: var(--text-secondary);
-            margin-bottom: 16px;
+        .settings-form {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 24px;
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
         }
 
-        .empty-state p {
-            color: var(--text-secondary);
-            margin: 0;
-        }
-
-        /* Form styles */
         .form-group {
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
-        .form-label {
+        .form-group label {
             display: block;
-            font-weight: 500;
             margin-bottom: 8px;
+            font-weight: 500;
             color: var(--text-primary);
         }
 
-        .form-input {
+        .form-group input {
             width: 100%;
-            padding: 12px 16px;
+            padding: 12px;
             border: 1px solid var(--border);
             border-radius: var(--radius);
             font-size: 16px;
-            transition: border-color 0.2s;
+            color: var(--text-primary);
+            background: var(--white);
+            transition: all 0.2s ease;
         }
 
-        .form-input:focus {
+        .form-group input:focus {
             outline: none;
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
-        .form-button {
-            background-color: var(--primary);
+        .save-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
             color: var(--white);
             border: none;
             border-radius: var(--radius);
-            padding: 12px 24px;
             font-size: 16px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+            margin-top: 8px;
         }
 
-        .form-button:hover {
-            background-color: var(--primary-hover);
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(37, 99, 235, 0.2);
+            background: linear-gradient(135deg, var(--primary-hover), var(--primary));
         }
 
-        .form-error {
-            color: var(--error);
-            font-size: 14px;
-            margin-top: 4px;
+        .save-btn i {
+            font-size: 18px;
+            transition: transform 0.3s ease;
         }
 
-        .form-success {
-            color: var(--success);
-            font-size: 14px;
-            margin-top: 4px;
+        .save-btn:hover i {
+            transform: translateX(2px);
         }
 
         @media (max-width: 768px) {
@@ -279,200 +275,6 @@
             .profile-sidebar {
                 margin-bottom: 24px;
             }
-        }
-
-        .password-input-group {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 10px;
-            background: none;
-            border: none;
-            color: #666;
-            cursor: pointer;
-            padding: 5px;
-        }
-
-        .toggle-password:hover {
-            color: #333;
-        }
-
-        .username {
-            color: #666;
-            font-size: 1.1em;
-            margin-top: 5px;
-        }
-
-        .settings-section {
-            background: white;
-            border-radius: 8px;
-            padding: 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .settings-section h2 {
-            color: #333;
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-        }
-
-        .settings-form {
-            max-width: 500px;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus {
-            border-color: #007bff;
-            outline: none;
-        }
-
-        .form-group input:read-only {
-            background-color: #f8f9fa;
-            cursor: not-allowed;
-        }
-
-        .password-input-group {
-            position: relative;
-        }
-
-        .password-input-group input {
-            padding-right: 40px;
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #666;
-            cursor: pointer;
-            padding: 5px;
-            transition: color 0.3s;
-        }
-
-        .toggle-password:hover {
-            color: #007bff;
-        }
-
-        .save-button {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 4px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .save-button:hover {
-            background: #0056b3;
-        }
-
-        .save-button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-
-        .event-link {
-            text-decoration: none;
-            color: inherit;
-            display: block;
-        }
-
-        .event-card {
-            transition: transform 0.2s;
-        }
-
-        .event-card:hover {
-            transform: translateY(-2px);
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #666;
-            cursor: pointer;
-            padding: 5px;
-            transition: color 0.3s;
-            z-index: 10;
-        }
-
-        .toggle-password:hover {
-            color: #007bff;
-        }
-
-        .toggle-password i {
-            pointer-events: none;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeOut {
-            from { opacity: 1; transform: translateY(0); }
-            to { opacity: 0; transform: translateY(20px); }
-        }
-
-        .input-group {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .input-group input {
-            flex: 1;
-        }
-
-        .save-field-button {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            white-space: nowrap;
-        }
-
-        .save-field-button:hover {
-            background: #0056b3;
-        }
-
-        .save-field-button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
         }
     </style>
 </head>
@@ -501,99 +303,109 @@
 
                 <div class="profile-content">
                     <div class="profile-header">
-                        <h1>Профиль</h1>
-                        <p class="username">{{.Username}}</p>
+                        <h1>Привет, {{.Username}}!</h1>
                     </div>
 
-                    <section id="tickets-section">
-                        <h2 class="section-title">Предстоящие мероприятия</h2>
-                        {{if .UpcomingTickets}}
-                        <div class="tickets-grid">
-                            {{range .UpcomingTickets}}
-                            <div class="ticket-card">
-                                <img src="{{.Event.Image}}" alt="{{.Event.Title}}" class="ticket-image" onerror="this.src='/static/images/placeholder.jpg'">
-                                <div class="ticket-content">
-                                    <h3 class="ticket-title">{{.Event.Title}}</h3>
-                                    <div class="ticket-info">
-                                        <p><i class="fas fa-calendar"></i> {{.Event.DateTime.Format "02.01.2006 15:04"}}</p>
-                                        <p><i class="fas fa-map-marker-alt"></i> {{.Event.Location}}</p>
-                                        <p><i class="fas fa-ticket-alt"></i> Количество: {{.Quantity}}</p>
+                    <div class="profile-sections">
+                        <section id="tickets-section">
+                            <h2 class="section-title">Предстоящие мероприятия</h2>
+                            {{if .UpcomingTickets}}
+                            <div class="tickets-grid">
+                                {{range .UpcomingTickets}}
+                                <div class="ticket-card">
+                                    <img src="{{.Event.Image}}" alt="{{.Event.Title}}" class="ticket-image" onerror="this.src='/static/images/placeholder.jpg'">
+                                    <div class="ticket-content">
+                                        <a href="/events/{{.Event.ID}}" class="ticket-title">{{.Event.Title}}</a>
+                                        <div class="ticket-info">
+                                            <p>
+                                                <i class="far fa-calendar-alt"></i>
+                                                {{.Event.DateTime.Format "02.01.2006 15:04"}}
+                                            </p>
+                                            <p>
+                                                <i class="fas fa-map-marker-alt"></i>
+                                                {{.Event.Location}}
+                                            </p>
+                                            <p>
+                                                <i class="fas fa-ticket-alt"></i>
+                                                Количество билетов: {{.Quantity}}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <span class="ticket-status status-upcoming">
-                                        <i class="fas fa-clock"></i>
-                                        Предстоящее
-                                    </span>
                                 </div>
+                                {{end}}
                             </div>
+                            {{else}}
+                            <p class="no-tickets">У вас пока нет билетов на предстоящие мероприятия</p>
                             {{end}}
-                        </div>
-                        {{else}}
-                        <div class="empty-state">
-                            <i class="fas fa-ticket-alt"></i>
-                            <p>У вас пока нет билетов на предстоящие мероприятия</p>
-                        </div>
-                        {{end}}
 
-                        <h2 class="section-title">Прошедшие мероприятия</h2>
-                        {{if .PastTickets}}
-                        <div class="tickets-grid">
-                            {{range .PastTickets}}
-                            <div class="ticket-card">
-                                <img src="{{.Event.Image}}" alt="{{.Event.Title}}" class="ticket-image" onerror="this.src='/static/images/placeholder.jpg'">
-                                <div class="ticket-content">
-                                    <h3 class="ticket-title">{{.Event.Title}}</h3>
-                                    <div class="ticket-info">
-                                        <p><i class="fas fa-calendar"></i> {{.Event.DateTime.Format "02.01.2006 15:04"}}</p>
-                                        <p><i class="fas fa-map-marker-alt"></i> {{.Event.Location}}</p>
-                                        <p><i class="fas fa-ticket-alt"></i> Количество: {{.Quantity}}</p>
+                            <h2 class="section-title">Прошедшие мероприятия</h2>
+                            {{if .PastTickets}}
+                            <div class="tickets-grid">
+                                {{range .PastTickets}}
+                                <div class="ticket-card">
+                                    <img src="{{.Event.Image}}" alt="{{.Event.Title}}" class="ticket-image" onerror="this.src='/static/images/placeholder.jpg'">
+                                    <div class="ticket-content">
+                                        <a href="/events/{{.Event.ID}}" class="ticket-title">{{.Event.Title}}</a>
+                                        <div class="ticket-info">
+                                            <p>
+                                                <i class="far fa-calendar-alt"></i>
+                                                {{.Event.DateTime.Format "02.01.2006 15:04"}}
+                                            </p>
+                                            <p>
+                                                <i class="fas fa-map-marker-alt"></i>
+                                                {{.Event.Location}}
+                                            </p>
+                                            <p>
+                                                <i class="fas fa-ticket-alt"></i>
+                                                Количество билетов: {{.Quantity}}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <span class="ticket-status status-past">
-                                        <i class="fas fa-check"></i>
-                                        Прошедшее
-                                    </span>
                                 </div>
+                                {{end}}
                             </div>
+                            {{else}}
+                            <p class="no-tickets">У вас пока нет билетов на прошедшие мероприятия</p>
                             {{end}}
-                        </div>
-                        {{else}}
-                        <div class="empty-state">
-                            <i class="fas fa-history"></i>
-                            <p>У вас пока нет билетов на прошедшие мероприятия</p>
-                        </div>
-                        {{end}}
-                    </section>
+                        </section>
 
-                    <div class="settings-section" id="settings-section" style="display: none;">
-                        <h2>Настройки профиля</h2>
-                        <form id="settings-form" class="settings-form">
-                            <div class="form-group">
-                                <label for="username">Имя пользователя</label>
-                                <div class="input-group">
-                                    <input type="text" id="username" name="username" value="{{.User.Username}}" required>
-                                    <button type="button" class="save-field-button" onclick="saveField('username')">Сохранить</button>
+                        <section id="settings-section" style="display:none;">
+                            <h2 class="section-title">Настройки профиля</h2>
+                            <form id="settingsForm" class="settings-form">
+                                <div class="form-group">
+                                    <label for="username">Имя пользователя</label>
+                                    <input type="text" id="username" name="username" value="{{.Username}}" required>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="email">Email</label>
-                                <div class="input-group">
-                                    <input type="email" id="email" name="email" value="{{.User.Email}}" required>
-                                    <button type="button" class="save-field-button" onclick="saveField('email')">Сохранить</button>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" id="email" name="email" value="{{.Email}}" required>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="new_password">Новый пароль</label>
-                                <div class="input-group">
-                                    <input type="password" id="new_password" name="new_password" placeholder="Введите новый пароль">
-                                    <input type="password" id="confirm_password" name="confirm_password" placeholder="Подтвердите пароль">
-                                    <button type="button" class="save-field-button" onclick="saveField('password')">Сохранить</button>
+                                <div class="form-group">
+                                    <label for="current_password">Текущий пароль</label>
+                                    <input type="password" id="current_password" name="current_password">
                                 </div>
-                            </div>
-                        </form>
+                                <div class="form-group">
+                                    <label for="new_password">Новый пароль</label>
+                                    <input type="password" id="new_password" name="new_password">
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirm_password">Подтвердите новый пароль</label>
+                                    <input type="password" id="confirm_password" name="confirm_password">
+                                </div>
+                                <button type="submit" class="save-btn">
+                                    <i class="fas fa-save"></i>
+                                    Сохранить изменения
+                                </button>
+                            </form>
+                        </section>
                     </div>
                 </div>
             </div>
         </div>
     </main>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3"></div>
 
     <script>
         // Переключение между разделами
@@ -601,139 +413,79 @@
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const section = link.getAttribute('data-section');
-                
-                // Обновляем активную ссылку
                 document.querySelectorAll('.profile-nav-link').forEach(l => l.classList.remove('active'));
                 link.classList.add('active');
-                
-                // Показываем нужную секцию
                 document.getElementById('tickets-section').style.display = section === 'tickets' ? 'block' : 'none';
                 document.getElementById('settings-section').style.display = section === 'settings' ? 'block' : 'none';
             });
         });
 
-        async function saveField(fieldType) {
-            const formData = {
-                username: document.getElementById('username').value,
-                email: document.getElementById('email').value
-            };
-
-            // Проверяем обязательные поля
-            if (fieldType === 'username' && !formData.username) {
-                showToast('error', 'Имя пользователя не может быть пустым');
+        // Обработка формы настроек
+        document.querySelector('.settings-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const newPassword = document.getElementById('new_password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            
+            if (newPassword && newPassword !== confirmPassword) {
+                alert('Пароли не совпадают');
                 return;
             }
-
-            if (fieldType === 'email' && !formData.email) {
-                showToast('error', 'Email не может быть пустым');
-                return;
-            }
-
-            if (fieldType === 'password') {
-                const newPassword = document.getElementById('new_password').value;
-                const confirmPassword = document.getElementById('confirm_password').value;
-
-                if (!newPassword) {
-                    showToast('error', 'Введите новый пароль');
-                    return;
-                }
-
-                if (newPassword !== confirmPassword) {
-                    showToast('error', 'Пароли не совпадают');
-                    return;
-                }
-
-                formData.new_password = newPassword;
-                formData.confirm_password = confirmPassword;
-            }
-
+            
+            const formData = new FormData(this);
+            
             try {
-                const response = await fetch('/profile/update', {
+                const response = await fetch(this.action, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData)
+                    body: formData
                 });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    let successMessage = 'Настройки успешно сохранены';
-                    if (fieldType === 'password') {
-                        successMessage = 'Пароль успешно изменен';
-                        document.getElementById('new_password').value = '';
-                        document.getElementById('confirm_password').value = '';
-                    } else if (fieldType === 'username') {
-                        document.querySelector('.username').textContent = formData.username;
-                    }
-                    showToast('success', successMessage);
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert(result.message || 'Настройки успешно обновлены');
+                    // Очищаем поля паролей после успешного обновления
+                    document.getElementById('current_password').value = '';
+                    document.getElementById('new_password').value = '';
+                    document.getElementById('confirm_password').value = '';
                 } else {
-                    // Обработка различных типов ошибок
-                    let errorMessage = data.error;
-                    if (data.error === 'username already exists') {
-                        errorMessage = 'Это имя пользователя уже занято';
-                    } else if (data.error === 'email already exists') {
-                        errorMessage = 'Этот email уже используется';
-                    } else if (data.error === 'invalid password format') {
-                        errorMessage = 'Пароль должен содержать минимум 8 символов, включая заглавные и строчные буквы, цифры и специальные символы';
-                    } else if (data.error === 'invalid email format') {
-                        errorMessage = 'Неверный формат email';
-                    }
-                    showToast('error', errorMessage);
+                    alert(result.error || 'Произошла ошибка при обновлении настроек');
                 }
             } catch (error) {
+                alert('Произошла ошибка при обновлении настроек');
                 console.error('Error:', error);
-                showToast('error', 'Произошла ошибка при сохранении настроек. Пожалуйста, попробуйте позже.');
-            }
-        }
-
-        // Функция для отображения уведомлений
-        function showToast(type, message) {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-
-            // Добавляем стили для уведомления
-            toast.style.position = 'fixed';
-            toast.style.bottom = '20px';
-            toast.style.right = '20px';
-            toast.style.padding = '10px 20px';
-            toast.style.borderRadius = '4px';
-            toast.style.color = 'white';
-            toast.style.zIndex = '1000';
-            toast.style.animation = 'fadeIn 0.3s, fadeOut 0.3s 2.7s';
-            toast.style.backgroundColor = type === 'success' ? '#28a745' : '#dc3545';
-            toast.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
-
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
-        }
-
-        function togglePassword(inputId) {
-            const input = document.getElementById(inputId);
-            const icon = input.nextElementSibling.querySelector('i');
-            
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                input.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        }
-
-        // При загрузке страницы заполняем текущий пароль звездочками
-        document.addEventListener('DOMContentLoaded', function() {
-            const currentPasswordInput = document.getElementById('current_password');
-            if (currentPasswordInput) {
-                currentPasswordInput.value = '••••••••';
             }
         });
+
+        function showToast(type, message) {
+            const toastContainer = document.querySelector('.toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0`;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'assertive');
+            toast.setAttribute('aria-atomic', 'true');
+            
+            toast.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            `;
+            
+            toastContainer.appendChild(toast);
+            const bsToast = new bootstrap.Toast(toast, {
+                autohide: true,
+                delay: 3000
+            });
+            bsToast.show();
+            
+            // Удаляем toast после скрытия
+            toast.addEventListener('hidden.bs.toast', function () {
+                toast.remove();
+            });
+        }
     </script>
 </body>
 </html> 

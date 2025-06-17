@@ -14,9 +14,15 @@ import (
 	"fmt"
 )
 
-var DB *gorm.DB // должен быть инициализирован в main.go
+type EventController struct {
+	db *gorm.DB
+}
 
-var events []models.Event
+func NewEventController(db *gorm.DB) *EventController {
+	return &EventController{
+		db: db,
+	}
+}
 
 func ShowMainPage(c *gin.Context) {
 	var events []models.Event
@@ -54,8 +60,252 @@ func ShowMainPage(c *gin.Context) {
 		query = query.Where("category = ?", category)
 	}
 	
-	// Применяем сортировку с учетом индексов
+	// Получаем текущее время
+	now := time.Now()
+	
+	// Разделяем запрос на предстоящие и прошедшие события
+	var upcomingEvents, pastEvents []models.Event
+	
+	// Получаем предстоящие события
+	upcomingQuery := query.Where("date_time >= ?", now)
 	switch sortType {
+	case "date":
+		upcomingQuery = upcomingQuery.Order("date_time ASC")
+	case "date-desc":
+		upcomingQuery = upcomingQuery.Order("date_time DESC")
+	case "price-asc":
+		upcomingQuery = upcomingQuery.Order("price ASC")
+	case "price-desc":
+		upcomingQuery = upcomingQuery.Order("price DESC")
+	case "title":
+		upcomingQuery = upcomingQuery.Order("title ASC")
+	case "popular":
+		upcomingQuery = upcomingQuery.Order("sold_tickets DESC")
+	default:
+		upcomingQuery = upcomingQuery.Order("date_time ASC")
+	}
+	
+	if err := upcomingQuery.Find(&upcomingEvents).Error; err != nil {
+		log.Printf("Error fetching upcoming events: %v", err)
+		c.HTML(http.StatusInternalServerError, "index.html", gin.H{
+			"error": "Ошибка при получении мероприятий",
+			"IsAuthenticated": c.GetBool("is_authenticated"),
+		})
+		return
+	}
+	
+	// Получаем прошедшие события
+	pastQuery := query.Where("date_time < ?", now).Order("date_time DESC")
+	if err := pastQuery.Find(&pastEvents).Error; err != nil {
+		log.Printf("Error fetching past events: %v", err)
+		c.HTML(http.StatusInternalServerError, "index.html", gin.H{
+			"error": "Ошибка при получении мероприятий",
+			"IsAuthenticated": c.GetBool("is_authenticated"),
+		})
+		return
+	}
+	
+	// Объединяем события
+	events = append(upcomingEvents, pastEvents...)
+	
+	// Применяем пагинацию
+	total := len(events)
+	start := offset
+	end := offset + pageSizeNum
+	if start >= total {
+		start = total
+	}
+	if end > total {
+		end = total
+	}
+	
+	// Получаем страницу событий
+	pageEvents := events[start:end]
+	
+	// Получаем информацию о пользователе из сессии
+	session := sessions.Default(c)
+	username := session.Get("username")
+	userID := session.Get("user_id")
+
+	// Рассчитываем информацию о пагинации
+	totalPages := int(math.Ceil(float64(total) / float64(pageSizeNum)))
+	
+	c.HTML(http.StatusOK, "index.html", gin.H{
+		"Events": pageEvents,
+		"SearchQuery": searchQuery,
+		"SortType": sortType,
+		"Category": category,
+		"IsAuthenticated": userID != nil,
+		"Username": username,
+		"Pagination": gin.H{
+			"CurrentPage": pageNum,
+			"TotalPages": totalPages,
+			"TotalItems": total,
+			"PageSize": pageSizeNum,
+		},
+	})
+}
+
+func (ec *EventController) ShowEvent(c *gin.Context) {
+	eventID := c.Param("id")
+	log.Printf("Loading event with ID: %s", eventID)
+
+	var event models.Event
+	if err := ec.db.First(&event, eventID).Error; err != nil {
+		log.Printf("Error loading event: %v", err)
+		panic("Событие не найдено")
+	}
+
+	log.Printf("Successfully loaded event: %+v", event)
+
+	// Get user ID from session
+	session := sessions.Default(c)
+	userID := session.Get("user_id")
+	username := session.Get("username")
+	isAuthenticated := userID != nil
+
+	var userTickets int
+	if isAuthenticated {
+		// Get user's tickets for this event
+		var ticket models.UserTicket
+		if err := ec.db.Where("user_id = ? AND event_id = ?", userID, eventID).First(&ticket).Error; err != nil {
+			if err != gorm.ErrRecordNotFound {
+				log.Printf("Error checking user tickets: %v", err)
+			}
+			userTickets = 0
+		} else {
+			userTickets = ticket.Quantity
+			log.Printf("Found user tickets: %d", userTickets)
+		}
+	}
+
+	// Calculate remaining tickets
+	remainingTickets := event.TotalTickets - event.SoldTickets
+	log.Printf("Remaining tickets: %d", remainingTickets)
+
+	c.HTML(http.StatusOK, "event.html", gin.H{
+		"Event":           event,
+		"UserTickets":     userTickets,
+		"RemainingTickets": remainingTickets,
+		"IsAuthenticated": isAuthenticated,
+		"Username":        username,
+	})
+}
+
+func (ec *EventController) BuyTicket(c *gin.Context) {
+	eventID := c.Param("id")
+	userID := sessions.Default(c).Get("user_id")
+
+	if userID == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Необходимо авторизоваться"})
+		return
+	}
+
+	// Получаем количество билетов из формы
+	quantityStr := c.PostForm("quantity")
+	quantity, err := strconv.Atoi(quantityStr)
+	if err != nil || quantity <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверное количество билетов"})
+		return
+	}
+
+	// Начинаем транзакцию
+	tx := ec.db.Begin()
+	if tx.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при обработке запроса"})
+		return
+	}
+
+	// Получаем информацию о событии
+	var event models.Event
+	if err := tx.First(&event, eventID).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusNotFound, gin.H{"error": "Событие не найдено"})
+		return
+	}
+
+	// Проверяем доступность билетов
+	if event.SoldTickets+quantity > event.TotalTickets {
+		tx.Rollback()
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Недостаточно билетов"})
+		return
+	}
+
+	// Проверяем существующие билеты пользователя
+	var existingTicket models.UserTicket
+	err = tx.Where("user_id = ? AND event_id = ?", userID, eventID).First(&existingTicket).Error
+
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			// Создаем новую запись о билетах
+			newTicket := models.UserTicket{
+				UserID:  userID.(uint),
+				EventID: event.ID,
+				Quantity: quantity,
+			}
+			if err := tx.Create(&newTicket).Error; err != nil {
+				tx.Rollback()
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при покупке билета"})
+				return
+			}
+		} else {
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при проверке билетов"})
+			return
+		}
+	} else {
+		// Обновляем существующую запись
+		existingTicket.Quantity += quantity
+		if err := tx.Save(&existingTicket).Error; err != nil {
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при обновлении билетов"})
+			return
+		}
+	}
+
+	// Обновляем количество проданных билетов
+	event.SoldTickets += quantity
+	if err := tx.Save(&event).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при обновлении события"})
+		return
+	}
+
+	// Завершаем транзакцию
+	if err := tx.Commit().Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при завершении транзакции"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": fmt.Sprintf("Успешно куплено %d билетов", quantity),
+		"tickets": quantity,
+	})
+}
+
+func ShowEvents(c *gin.Context) {
+	// Получаем параметры пагинации
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("page_size", "10"))
+
+	// Получаем параметры фильтрации
+	category := c.Query("category")
+	search := c.Query("search")
+	sort := c.DefaultQuery("sort", "date")
+
+	// Создаем базовый запрос
+	query := db.DB.Model(&models.Event{})
+
+	// Применяем фильтры
+	if category != "" {
+		query = query.Where("category = ?", category)
+	}
+	if search != "" {
+		query = query.Where("title ILIKE ? OR description ILIKE ?", "%"+search+"%", "%"+search+"%")
+	}
+
+	// Применяем сортировку
+	switch sort {
 	case "date":
 		query = query.Order("date_time ASC")
 	case "date-desc":
@@ -71,285 +321,36 @@ func ShowMainPage(c *gin.Context) {
 	default:
 		query = query.Order("date_time ASC")
 	}
-	
-	// Получаем общее количество записей для пагинации
+
+	// Получаем общее количество событий
 	var total int64
-	if err := query.Count(&total).Error; err != nil {
-		log.Printf("Error counting events: %v", err)
-		c.HTML(http.StatusInternalServerError, "index.html", gin.H{
-			"error": "Ошибка при получении количества мероприятий",
-			"IsAuthenticated": c.GetBool("is_authenticated"),
-		})
-		return
-	}
-	
+	query.Count(&total)
+
 	// Применяем пагинацию
-	query = query.Offset(offset).Limit(pageSizeNum)
-	
-	// Выполняем запрос
+	offset := (page - 1) * pageSize
+	query = query.Offset(offset).Limit(pageSize)
+
+	// Получаем события
+	var events []models.Event
 	if err := query.Find(&events).Error; err != nil {
-		log.Printf("Error fetching events: %v", err)
-		c.HTML(http.StatusInternalServerError, "index.html", gin.H{
-			"error": "Ошибка при получении мероприятий",
-			"IsAuthenticated": c.GetBool("is_authenticated"),
+		c.HTML(http.StatusInternalServerError, "error.html", gin.H{
+			"error": "Ошибка при получении списка мероприятий",
 		})
 		return
 	}
-
-	log.Printf("Found %d events", len(events))
-
-	// Получаем информацию о пользователе из сессии
-	session := sessions.Default(c)
-	username := session.Get("username")
-	userID := session.Get("user_id")
 
 	// Рассчитываем информацию о пагинации
-	totalPages := int(math.Ceil(float64(total) / float64(pageSizeNum)))
-	
-	c.HTML(http.StatusOK, "index.html", gin.H{
-		"Events": events,
-		"SearchQuery": searchQuery,
-		"SortType": sortType,
-		"Category": category,
-		"IsAuthenticated": userID != nil,
-		"Username": username,
-		"Pagination": gin.H{
-			"CurrentPage": pageNum,
-			"TotalPages": totalPages,
-			"TotalItems": total,
-			"PageSize": pageSizeNum,
-		},
-	})
-}
+	totalPages := (int(total) + pageSize - 1) / pageSize
 
-func MainPage(c *gin.Context) {
-	var events []models.Event
-	DB.Find(&events)
-
-	// Получаем параметр сортировки
-	sortType := c.PostForm("phone")
-
-	// Применяем сортировку
-	switch sortType {
-	case "SortName":
-		// Сортировка по названию
-		for i := 0; i < len(events)-1; i++ {
-			for j := i + 1; j < len(events); j++ {
-				if events[i].Title > events[j].Title {
-					events[i], events[j] = events[j], events[i]
-				}
-			}
-		}
-	case "SortPrice":
-		// Сортировка по цене
-		for i := 0; i < len(events)-1; i++ {
-			for j := i + 1; j < len(events); j++ {
-				if events[i].Price > events[j].Price {
-					events[i], events[j] = events[j], events[i]
-				}
-			}
-		}
-	case "SortDate":
-		// Сортировка по дате
-		for i := 0; i < len(events)-1; i++ {
-			for j := i + 1; j < len(events); j++ {
-				if events[i].DateTime.After(events[j].DateTime) {
-					events[i], events[j] = events[j], events[i]
-				}
-			}
-		}
-	case "SortCategory":
-		// Заглушка для сортировки по категории - просто возвращаем список без изменений
-		break
-	}
-
-	c.HTML(http.StatusOK, "index.html", gin.H{
-		"events":   events,
-		"username": c.GetString("username"),
-	})
-}
-
-// ShowEventDetails отображает страницу мероприятия
-func ShowEventDetails(c *gin.Context) {
-	id := c.Param("id")
-	eventID, err := strconv.Atoi(id)
-	if err != nil {
-		log.Printf("Invalid event ID: %v", err)
-		c.HTML(http.StatusBadRequest, "404.html", gin.H{
-			"error": "Неверный ID мероприятия",
-			"IsAuthenticated": c.GetBool("is_authenticated"),
-		})
-		return
-	}
-
-	var event models.Event
-	if err := db.DB.First(&event, eventID).Error; err != nil {
-		log.Printf("Error fetching event: %v", err)
-		c.HTML(http.StatusNotFound, "404.html", gin.H{
-			"error": "Мероприятие не найдено",
-			"IsAuthenticated": c.GetBool("is_authenticated"),
-		})
-		return
-	}
-
-	log.Printf("Found event: %+v", event)
-
-	// Получаем количество проданных билетов
-	var soldTickets int64
-	db.DB.Model(&models.Ticket{}).Where("event_id = ?", event.ID).Count(&soldTickets)
-
-	// Проверяем, авторизован ли пользователь
-	session := sessions.Default(c)
-	userID := session.Get("user_id")
-	username := session.Get("username")
-	isAuthenticated := userID != nil
-
-	var userTicket models.UserTicket
-	var hasTicket bool
-	if isAuthenticated {
-		if err := db.DB.Where("user_id = ? AND event_id = ?", userID, event.ID).First(&userTicket).Error; err == nil {
-			hasTicket = true
-		}
-	}
-
-	// Форматируем дату и цену для отображения
-	formattedDate := event.DateTime.Format("02.01.2006 15:04")
-	formattedPrice := fmt.Sprintf("%.2f", event.Price)
-
-	data := gin.H{
-		"Event": gin.H{
-			"ID": event.ID,
-			"Title": event.Title,
-			"Image": event.Image,
-			"DateTime": formattedDate,
-			"Location": event.Location,
-			"Price": formattedPrice,
-			"Description": event.Description,
-			"TotalTickets": event.TotalTickets,
-			"SoldTickets": soldTickets,
-		},
-		"IsAuthenticated": isAuthenticated,
-		"Username": username,
-		"HasTicket": hasTicket,
-	}
-
-	log.Printf("Rendering template with data: %+v", data)
-
-	c.HTML(http.StatusOK, "event.html", data)
-}
-
-func GetEvents(c *gin.Context) {
-	var events []models.Event
-	if err := db.DB.Preload("Category").Preload("Organizer").Find(&events).Error; err != nil {
-		c.HTML(http.StatusInternalServerError, "error.html", gin.H{
-			"error": "Ошибка при загрузке событий",
-		})
-		return
-	}
-
-	c.HTML(http.StatusOK, "index.html", gin.H{
-		"events": events,
-	})
-}
-
-func BuyTicket(c *gin.Context) {
-	eventID := c.Param("id")
-	userID := c.GetUint("user_id")
-
-	var event models.Event
-	if err := db.DB.First(&event, eventID).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"success": false,
-			"error": "Событие не найдено",
-		})
-		return
-	}
-
-	// Проверяем, не превышено ли количество билетов
-	if event.SoldTickets >= event.TotalTickets {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error": "Все билеты проданы",
-		})
-		return
-	}
-
-	// Проверяем, не купил ли пользователь уже билет на это мероприятие
-	var existingTicket models.UserTicket
-	if err := db.DB.Where("user_id = ? AND event_id = ?", userID, event.ID).First(&existingTicket).Error; err == nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error": "Вы уже купили билет на это мероприятие",
-		})
-		return
-	}
-
-	// Создаем запись в Ticket
-	ticket := models.Ticket{
-		EventID: event.ID,
-		UserID:  userID,
-	}
-
-	// Создаем запись в UserTicket
-	userTicket := models.UserTicket{
-		UserID:    userID,
-		EventID:   event.ID,
-		Quantity:  1,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}
-
-	// Начинаем транзакцию
-	tx := db.DB.Begin()
-	if tx.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error": "Ошибка при создании билета",
-		})
-		return
-	}
-
-	// Создаем запись в Ticket
-	if err := tx.Create(&ticket).Error; err != nil {
-		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error": "Ошибка при создании билета",
-		})
-		return
-	}
-
-	// Создаем запись в UserTicket
-	if err := tx.Create(&userTicket).Error; err != nil {
-		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error": "Ошибка при создании записи о билете",
-		})
-		return
-	}
-
-	// Увеличиваем счетчик проданных билетов
-	if err := tx.Model(&event).Update("sold_tickets", event.SoldTickets+1).Error; err != nil {
-		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error": "Ошибка при обновлении количества билетов",
-		})
-		return
-	}
-
-	// Завершаем транзакцию
-	if err := tx.Commit().Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"success": false,
-			"error": "Ошибка при сохранении транзакции",
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"message": "Билет успешно куплен!",
+	c.HTML(http.StatusOK, "events.html", gin.H{
+		"events":      events,
+		"page":        page,
+		"pageSize":    pageSize,
+		"totalPages":  totalPages,
+		"total":       total,
+		"category":    category,
+		"search":      search,
+		"sort":        sort,
+		"categories":  []string{"concert", "theater", "exhibition", "sport", "other"},
 	})
 }

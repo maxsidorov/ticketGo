@@ -4,11 +4,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/maxsidorov/ticketGo/controllers"
 	"github.com/maxsidorov/ticketGo/middleware"
+	"gorm.io/gorm"
 )
 
-func SetupRoutes(r *gin.Engine) {
-	// Статические файлы
-	r.Static("/static", "./static")
+func RegisterRoutes(r *gin.Engine, db *gorm.DB) {
+	// Инициализация контроллеров
+	eventController := controllers.NewEventController(db)
 
 	// Главная страница
 	r.GET("/", controllers.ShowMainPage)
@@ -25,14 +26,14 @@ func SetupRoutes(r *gin.Engine) {
 	r.POST("/profile/update", middleware.AuthRequired(), controllers.UpdateProfile)
 
 	// Маршруты для мероприятий
-	r.GET("/events/:id", controllers.ShowEventDetails)
-	r.POST("/events/:id/buy", middleware.AuthRequired(), controllers.BuyTicket)
+	r.GET("/events", controllers.ShowEvents)
+	r.GET("/events/:id", eventController.ShowEvent)
+	r.POST("/events/:id/buy", middleware.AuthRequired(), eventController.BuyTicket)
 
 	// Обработка 404
 	r.NoRoute(func(c *gin.Context) {
 		c.HTML(404, "404.html", gin.H{
-			"error": "Страница не найдена",
-			"IsAuthenticated": c.GetBool("is_authenticated"),
+			"title": "404 - Страница не найдена",
 		})
 	})
 }

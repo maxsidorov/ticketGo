@@ -16,12 +16,14 @@ type User struct {
 }
 
 type UserTicket struct {
-	ID        uint      `gorm:"primarykey" json:"id"`
-	UserID    uint      `gorm:"not null" json:"user_id"`
-	EventID   uint      `gorm:"not null" json:"event_id"`
-	Quantity  int       `gorm:"not null" json:"quantity"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	User      User      `gorm:"foreignKey:UserID" json:"user"`
-	Event     Event     `gorm:"foreignKey:EventID" json:"event"`
+	ID           uint      `gorm:"primarykey" json:"id"`
+	UserID       uint      `gorm:"not null" json:"user_id"`
+	EventID      uint      `gorm:"not null" json:"event_id"`
+	User         User      `gorm:"foreignKey:UserID" json:"user"`
+	Event        Event     `gorm:"foreignKey:EventID" json:"event"`
+	TicketsCount int       `gorm:"not null;default:1" json:"tickets_count"`
+	Quantity     int       `gorm:"not null;default:1" json:"quantity"`
+	Status       string    `gorm:"not null;default:'active'" json:"status"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 } 

@@ -266,29 +266,48 @@
         .pagination {
             display: flex;
             justify-content: center;
+            align-items: center;
             gap: 8px;
             margin-top: 40px;
+            flex-wrap: wrap;
         }
 
         .pagination-link {
-            padding: 8px 16px;
-            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            height: 40px;
+            padding: 0 12px;
+            border-radius: 8px;
             background-color: var(--white);
             border: 1px solid var(--border);
             color: var(--text-primary);
             text-decoration: none;
-            transition: all 0.2s;
+            font-weight: 500;
+            transition: all 0.2s ease;
         }
 
         .pagination-link:hover {
             border-color: var(--primary);
             color: var(--primary);
+            transform: translateY(-1px);
         }
 
         .pagination-link.active {
             background-color: var(--primary);
-            color: var(--white);
+            color: white;
             border-color: var(--primary);
+        }
+
+        .pagination-ellipsis {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            height: 40px;
+            color: var(--text-secondary);
+            font-weight: 500;
         }
 
         @media (max-width: 768px) {
@@ -338,6 +357,17 @@
 
             .events-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .pagination {
+                gap: 4px;
+            }
+
+            .pagination-link {
+                min-width: 36px;
+                height: 36px;
+                padding: 0 8px;
+                font-size: 14px;
             }
         }
     </style>
@@ -396,6 +426,59 @@
                 {{end}}
             </div>
         </div>
+
+        <!-- Pagination -->
+        {{if .Pagination.TotalPages}}
+        <div class="pagination">
+            {{if gt .Pagination.CurrentPage 1}}
+            <a href="?page={{subtract .Pagination.CurrentPage 1}}&sort={{.SortType}}&category={{.Category}}&search={{.SearchQuery}}" class="pagination-link" title="Предыдущая страница">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            {{end}}
+
+            {{$current := .Pagination.CurrentPage}}
+            {{$total := .Pagination.TotalPages}}
+            {{$delta := 2}}
+
+            {{/* Показываем первую страницу */}}
+            <a href="?page=1&sort={{.SortType}}&category={{.Category}}&search={{.SearchQuery}}" 
+               class="pagination-link {{if eq $current 1}}active{{end}}">
+                1
+            </a>
+
+            {{/* Показываем многоточие после первой страницы */}}
+            {{if gt (subtract $current $delta) 2}}
+            <span class="pagination-ellipsis">...</span>
+            {{end}}
+
+            {{/* Показываем страницы вокруг текущей */}}
+            {{range $i := sequence (max 2 (subtract $current $delta)) (min (subtract $total 1) (add $current $delta))}}
+            <a href="?page={{$i}}&sort={{$.SortType}}&category={{$.Category}}&search={{$.SearchQuery}}" 
+               class="pagination-link {{if eq $i $.Pagination.CurrentPage}}active{{end}}">
+                {{$i}}
+            </a>
+            {{end}}
+
+            {{/* Показываем многоточие перед последней страницей */}}
+            {{if lt (add $current $delta) (subtract $total 1)}}
+            <span class="pagination-ellipsis">...</span>
+            {{end}}
+
+            {{/* Показываем последнюю страницу, если она не первая */}}
+            {{if gt $total 1}}
+            <a href="?page={{$total}}&sort={{.SortType}}&category={{.Category}}&search={{.SearchQuery}}" 
+               class="pagination-link {{if eq $current $total}}active{{end}}">
+                {{$total}}
+            </a>
+            {{end}}
+
+            {{if lt .Pagination.CurrentPage .Pagination.TotalPages}}
+            <a href="?page={{add .Pagination.CurrentPage 1}}&sort={{.SortType}}&category={{.Category}}&search={{.SearchQuery}}" class="pagination-link" title="Следующая страница">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            {{end}}
+        </div>
+        {{end}}
     </main>
     <script>
         // Search functionality

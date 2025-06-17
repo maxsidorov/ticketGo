@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/maxsidorov/ticketGo/config"
-	"github.com/maxsidorov/ticketGo/controllers"
 	"github.com/maxsidorov/ticketGo/models"
 	"github.com/maxsidorov/ticketGo/storage"
 	"github.com/maxsidorov/ticketGo/db"
@@ -14,6 +13,7 @@ import (
 	"log"
 	"text/template"
 	"github.com/maxsidorov/ticketGo/middleware"
+	"time"
 )
 
 func main() {
@@ -32,8 +32,6 @@ func main() {
 		log.Printf("AutoMigrate completed successfully")
 	}
 
-	controllers.DB = db.DB
-
 	r := gin.Default()
 
 	sessionStore := cookie.NewStore([]byte("secret-key-123"))
@@ -49,19 +47,41 @@ func main() {
 		}
 		
 		if userID != nil {
-			// Преобразуем ID в uint
-			if userIDInt, ok := userID.(int); ok {
-				c.Set("user_id", uint(userIDInt))
-			}
+			c.Set("user_id", userID)
 		}
 		
 		c.Next()
 	})
 
-	// Добавляем функцию sub для шаблонов
+	// Добавляем функции для шаблонов
 	r.SetFuncMap(template.FuncMap{
-		"sub": func(a, b int) int {
+		"formatDate": func(t time.Time) string {
+			return t.Format("02.01.2006 15:04")
+		},
+		"sequence": func(start, end int) []int {
+			var result []int
+			for i := start; i <= end; i++ {
+				result = append(result, i)
+			}
+			return result
+		},
+		"add": func(a, b int) int {
+			return a + b
+		},
+		"subtract": func(a, b int) int {
 			return a - b
+		},
+		"max": func(a, b int) int {
+			if a > b {
+				return a
+			}
+			return b
+		},
+		"min": func(a, b int) int {
+			if a < b {
+				return a
+			}
+			return b
 		},
 	})
 
@@ -72,7 +92,7 @@ func main() {
 	r.Use(middleware.SetAuthStatus())
 
 	// Регистрируем все маршруты
-	routes.RegisterRoutes(r)
+	routes.RegisterRoutes(r, db.DB)
 
 	if err := r.Run(":" + cfg.Port); err != nil {
 		panic(fmt.Sprintf("failed to start server: %v", err))

@@ -49,95 +49,219 @@
 
         .event-header {
             display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 40px;
-            margin-bottom: 40px;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 32px;
         }
 
         .event-image {
             width: 100%;
             height: 400px;
-            object-fit: cover;
             border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+        }
+
+        .event-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .event-info {
             display: flex;
             flex-direction: column;
+            gap: 1.5rem;
         }
 
-        .event-date {
-            font-size: 16px;
-            color: var(--text-secondary);
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .event-title {
-            font-size: 32px;
+        .event-info h1 {
+            font-size: 2.5rem;
             font-weight: 700;
-            margin-bottom: 16px;
+            margin: 0;
+            color: var(--text-primary);
             line-height: 1.2;
         }
 
-        .event-location {
-            font-size: 16px;
-            color: var(--text-secondary);
-            margin-bottom: 24px;
+        .event-details {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .event-details p {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 0.75rem;
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .event-details i {
+            color: var(--primary);
+            width: 20px;
+            font-size: 1.1rem;
         }
 
         .event-price {
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 24px;
-        }
-
-        .buy-button {
-            background-color: var(--primary);
-            color: white;
-            border: none;
+            margin-top: auto;
+            padding: 1.5rem;
+            background: var(--white);
             border-radius: var(--radius);
-            padding: 16px 32px;
-            font-size: 18px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
+            box-shadow: var(--shadow-sm);
         }
 
-        .buy-button:hover {
-            background-color: var(--primary-hover);
+        .price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
         }
 
         .event-description {
-            background-color: var(--white);
+            background: var(--white);
+            padding: 2rem;
             border-radius: var(--radius);
-            padding: 32px;
-            margin-bottom: 40px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
         }
 
-        .description-title {
-            font-size: 24px;
+        .event-description h2 {
+            font-size: 1.5rem;
             font-weight: 600;
-            margin-bottom: 16px;
-        }
-
-        .description-text {
-            font-size: 16px;
             color: var(--text-primary);
-            line-height: 1.6;
+            margin: 0 0 1rem 0;
         }
 
-        @media (max-width: 1024px) {
+        .event-description p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .ticket-purchase {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .ticket-purchase h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 1.5rem 0;
+        }
+
+        .purchase-form {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .quantity-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: var(--bg-light);
+            color: var(--primary);
+            font-size: 1.2rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quantity-btn:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .quantity-input {
+            width: 60px;
+            height: 40px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .quantity-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .buy-btn {
+            flex: 1;
+            height: 40px;
+            border: none;
+            background: var(--primary);
+            color: var(--white);
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .buy-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .buy-btn:disabled {
+            background: var(--border);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            background: var(--white);
+            border-left: 4px solid var(--primary);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(120%);
+            transition: transform 0.3s ease-in-out;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification i {
+            color: var(--primary);
+            font-size: 1.25rem;
+        }
+
+        .notification p {
+            margin: 0;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
             .event-header {
                 grid-template-columns: 1fr;
             }
@@ -145,209 +269,193 @@
             .event-image {
                 height: 300px;
             }
-        }
 
-        @media (max-width: 768px) {
-            .event-title {
-                font-size: 28px;
+            .event-info h1 {
+                font-size: 2rem;
             }
 
-            .event-description {
-                padding: 24px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .event-title {
-                font-size: 24px;
+            .purchase-form {
+                flex-direction: column;
             }
 
-            .event-image {
-                height: 200px;
-            }
-
-            .buy-button {
+            .buy-btn {
                 width: 100%;
-                justify-content: center;
-            }
-        }
-
-        /* Toast notifications */
-        .toast {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            padding: 16px 24px;
-            background-color: var(--white);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-md);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            z-index: 1000;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        .toast.success {
-            border-left: 4px solid #10B981;
-        }
-
-        .toast.error {
-            border-left: 4px solid #EF4444;
-        }
-
-        .toast i {
-            font-size: 20px;
-        }
-
-        .toast.success i {
-            color: #10B981;
-        }
-
-        .toast.error i {
-            color: #EF4444;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
             }
         }
     </style>
 </head>
 <body>
+    <div id="notification" class="notification">
+        <i class="fas fa-info-circle"></i>
+        <p>Для покупки билетов необходимо авторизоваться</p>
+    </div>
     {{template "navbar.html" .}}
-
     <main>
         <div class="container">
             <div class="event-header">
-                <img src="{{.Event.Image}}" alt="{{.Event.Title}}" class="event-image" onerror="this.src='/static/images/placeholder.jpg'">
+                <div class="event-image">
+                    <img src="{{.Event.Image}}" alt="{{.Event.Title}}" onerror="this.src='/static/images/placeholder.jpg'">
+                </div>
                 <div class="event-info">
-                    <div class="event-date">
-                        <i class="far fa-calendar-alt"></i>
-                        {{.Event.DateTime}}
-                    </div>
-                    <h1 class="event-title">{{.Event.Title}}</h1>
-                    <div class="event-location">
-                        <i class="fas fa-map-marker-alt"></i>
-                        {{.Event.Location}}
-                    </div>
-                    <div class="event-price">{{.Event.Price}} ₽</div>
-                    {{if .IsAuthenticated}}
-                        {{if not .HasTicket}}
-                            <a href="/events/{{.Event.ID}}/buy" class="buy-button">
-                                <i class="fas fa-ticket-alt"></i>
-                                Купить билет
-                            </a>
-                        {{else}}
-                            <button class="buy-button" disabled>
-                                <i class="fas fa-check"></i>
-                                Билет куплен
-                            </button>
+                    <h1>{{.Event.Title}}</h1>
+                    <div class="event-details">
+                        <p><i class="fas fa-calendar"></i> {{.Event.DateTime.Format "02.01.2006 15:04"}}</p>
+                        <p><i class="fas fa-map-marker-alt"></i> {{.Event.Location}}</p>
+                        <p><i class="fas fa-tag"></i> {{.Event.Category}}</p>
+                        <p><i class="fas fa-ticket-alt"></i> Доступно билетов: {{subtract .Event.TotalTickets .Event.SoldTickets}}</p>
+                        {{if .UserTickets}}
+                        <p><i class="fas fa-ticket-alt"></i> Ваши билеты: {{.UserTickets}}</p>
                         {{end}}
-                    {{else}}
-                        <a href="/login" class="buy-button">
-                            <i class="fas fa-sign-in-alt"></i>
-                            Войти для покупки
-                        </a>
-                    {{end}}
+                    </div>
+                    <div class="event-price">
+                        <div class="price">{{.Event.Price}} ₽</div>
+                        {{if .IsAuthenticated}}
+                            <form action="/events/{{.Event.ID}}/buy" method="POST" class="purchase-form">
+                                <div class="quantity-selector">
+                                    <button type="button" class="quantity-btn" onclick="decreaseQuantity()">-</button>
+                                    <input type="number" name="quantity" id="quantity" class="quantity-input" value="1" min="1" max="{{subtract .Event.TotalTickets .Event.SoldTickets}}">
+                                    <button type="button" class="quantity-btn" onclick="increaseQuantity()">+</button>
+                                </div>
+                                <button type="submit" class="buy-btn" {{if eq (subtract .Event.TotalTickets .Event.SoldTickets) 0}}disabled{{end}}>
+                                    <i class="fas fa-shopping-cart"></i>
+                                    Купить билет
+                                </button>
+                            </form>
+                        {{else}}
+                            <a href="/login" class="btn btn-primary" style="width: 100%; text-align: center; margin-top: 1rem;">
+                                Войдите, чтобы купить билет
+                            </a>
+                        {{end}}
+                    </div>
                 </div>
             </div>
-
             <div class="event-description">
-                <h2 class="description-title">О мероприятии</h2>
-                <div class="description-text">
-                    {{.Event.Description}}
-                </div>
+                <h2>Описание</h2>
+                <p>{{.Event.Description}}</p>
             </div>
         </div>
     </main>
-
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Форматирование цены
-            const priceElement = document.querySelector('.event-price');
-            const price = parseFloat('{{.Event.Price}}');
-            if (!isNaN(price)) {
-                const formattedPrice = new Intl.NumberFormat('ru-RU').format(price);
-                priceElement.textContent = `${formattedPrice} ₽`;
-            }
+        const quantityInput = 1;
+        const buyButton = document.getElementById('buyButton');
+        const maxTickets = 30;
+        const userTickets = {{.UserTickets}};
+        const availableTickets = {{.Event.TotalTickets}} - {{.Event.SoldTickets}};
+        const eventId = {{.Event.ID}};
+        const isAuthenticated = {{.IsAuthenticated}};
 
-            // Добавляем обработку ошибок для изображения
-            const eventImage = document.querySelector('.event-image');
-            if (eventImage) {
-                eventImage.onerror = function() {
-                    this.src = '/static/images/placeholder.jpg';
-                };
-            }
-
-            // Debug information
-            console.log('Event data:', {
-                title: '{{.Event.Title}}',
-                date: '{{.Event.DateTime}}',
-                location: '{{.Event.Location}}',
-                price: '{{.Event.Price}}',
-                description: '{{.Event.Description}}'
-            });
-        });
-
-        // Функция для создания и отображения уведомления
-        function showToast(message, type = 'success') {
-            const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.innerHTML = `
-                <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i>
-                <span>${message}</span>
-            `;
-            document.body.appendChild(toast);
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            const notificationText = notification.querySelector('p');
+            const notificationIcon = notification.querySelector('i');
             
-            // Удаляем уведомление через 3 секунды
+            notificationText.textContent = message;
+            notificationIcon.className = isError ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
+            notification.style.borderLeftColor = isError ? '#EF4444' : '#10B981';
+            notificationIcon.style.color = isError ? '#EF4444' : '#10B981';
+            
+            notification.classList.add('show');
             setTimeout(() => {
-                toast.remove();
+                notification.classList.remove('show');
             }, 3000);
         }
 
-        // Обработчик покупки билета
-        document.querySelector('.buy-button').addEventListener('click', async function(e) {
-            e.preventDefault();
-            
-            // Проверяем авторизацию
-            if (!{{.IsAuthenticated}}) {
-                showToast('Для покупки билета необходимо войти в аккаунт', 'error');
+        function updateQuantity() {
+            const value = parseInt(quantityInput.value);
+            const min = userTickets || 1;
+            const max = Math.min(maxTickets, availableTickets + userTickets);
+
+            if (value < min) {
+                quantityInput.value = min;
+            } else if (value > max) {
+                quantityInput.value = max;
+            }
+
+            buyButton.disabled = value === userTickets;
+        }
+
+        function decreaseQuantity() {
+            const input = document.getElementById('quantity');
+            const currentValue = parseInt(input.value);
+            if (currentValue > 1) {
+                input.value = currentValue - 1;
+            }
+        }
+
+        function increaseQuantity() {
+            const input = document.getElementById('quantity');
+            const currentValue = parseInt(input.value);
+            const maxValue = parseInt(input.getAttribute('max'));
+            if (currentValue < maxValue) {
+                input.value = currentValue + 1;
+            }
+        }
+
+        async function buyTickets() {
+            if (!isAuthenticated) {
+                showNotification('Для покупки билетов необходимо авторизоваться', true);
                 setTimeout(() => {
                     window.location.href = '/login';
-                }, 1500);
+                }, 2000);
                 return;
             }
 
+            const quantity = parseInt(quantityInput.value);
             try {
-                const response = await fetch(`/events/{{.Event.ID}}/buy`, {
+                const response = await fetch(`/events/${eventId}/buy`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                    }
+                    },
+                    body: JSON.stringify({
+                        quantity: quantity
+                    })
                 });
 
                 const data = await response.json();
-
-                if (data.success) {
-                    showToast('Билет успешно куплен!');
-                    // Обновляем кнопку
-                    const button = document.querySelector('.buy-button');
-                    button.innerHTML = '<i class="fas fa-check"></i> Билет куплен';
-                    button.disabled = true;
+                
+                if (response.ok) {
+                    showNotification(data.message);
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
                 } else {
-                    showToast(data.error || 'Произошла ошибка при покупке билета', 'error');
+                    showNotification(data.error || 'Произошла ошибка при покупке билетов', true);
                 }
             } catch (error) {
-                showToast('Произошла ошибка при покупке билета', 'error');
+                showNotification('Произошла ошибка при отправке запроса', true);
+                console.error('Error:', error);
+            }
+        }
+
+        // Обработка ответа от сервера после покупки билета
+        document.querySelector('.purchase-form')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            
+            try {
+                const response = await fetch(this.action, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showNotification(result.message || 'Билет успешно куплен!');
+                    setTimeout(() => {
+                        window.location.href = '/profile';
+                    }, 2000);
+                } else {
+                    showNotification(result.error || 'Произошла ошибка при покупке билета');
+                }
+            } catch (error) {
+                showNotification('Произошла ошибка при покупке билета');
             }
         });
+
+        // Initialize button state
+        updateQuantity();
     </script>
 </body>
 </html> 
