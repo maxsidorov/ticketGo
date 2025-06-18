@@ -117,11 +117,8 @@
             </a>
             <nav class="nav-links">
                 {{if .IsAuthenticated}}
-                    <a href="/favorites" class="nav-link {{if eq .CurrentPage "favorites"}}active{{end}}">
-                        <i class="far fa-heart"></i>
-                    </a>
                     <a href="/profile" class="nav-link {{if eq .CurrentPage "profile"}}active{{end}}">
-                        <i class="far fa-user"></i>
+                        <i class="far fa-user">  {{.Username}}</i>
                     </a>
                     <a href="/logout" class="nav-button">Выйти</a>
                 {{else}}

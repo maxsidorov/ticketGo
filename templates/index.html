@@ -48,6 +48,160 @@
             width: 100%;
         }
 
+        /* Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* Filters sidebar */
+        .filters-sidebar {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+            width: 280px;
+            flex-shrink: 0;
+        }
+
+        .filters-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-section {
+            margin-bottom: 24px;
+        }
+
+        .filter-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-label {
+            display: block;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            color: var(--text-primary);
+            background: var(--white);
+            transition: all 0.2s;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .price-range {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .price-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            color: var(--text-primary);
+            background: var(--white);
+            transition: all 0.2s;
+        }
+
+        .price-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .date-range {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .date-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            color: var(--text-primary);
+            background: var(--white);
+            transition: all 0.2s;
+        }
+
+        .date-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .apply-filters-btn {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 16px;
+        }
+
+        .apply-filters-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .clear-filters-btn {
+            width: 100%;
+            padding: 10px 16px;
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 8px;
+        }
+
+        .clear-filters-btn:hover {
+            background: var(--bg-light);
+            color: var(--text-primary);
+        }
+
+        /* Content area */
+        .content-area {
+            min-width: 0;
+            width: 100%;
+        }
+
         /* Hero */
         .hero {
             text-align: center;
@@ -111,21 +265,22 @@
             gap: 16px;
         }
 
+        /* Filters container */
         .filters-container {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
-            padding: 0 1rem;
-            gap: 1.5rem;
+            padding: 0;
             flex-wrap: wrap;
+            gap: 16px;
         }
 
         .filter-tabs {
             display: flex;
             gap: 0.75rem;
             flex-wrap: wrap;
-            justify-content: center;
+            justify-content: flex-start;
         }
 
         .filter-tab {
@@ -156,7 +311,7 @@
 
         .sort-container {
             position: relative;
-            min-width: 220px;
+            width: 220px;
         }
 
         .sort-select {
@@ -315,20 +470,32 @@
                 font-size: 36px;
             }
 
-            .events-grid {
-                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            .main-layout {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+
+            .filters-sidebar {
+                position: static;
+                order: 2;
+                width: 100%;
+            }
+
+            .content-area {
+                order: 1;
             }
 
             .filters-container {
                 flex-direction: column;
-                align-items: center;
+                align-items: flex-start;
                 gap: 1rem;
                 padding: 0;
             }
 
             .filter-tabs {
-                justify-content: center;
+                justify-content: flex-start;
                 gap: 0.5rem;
+                width: 100%;
             }
 
             .filter-tab {
@@ -343,6 +510,10 @@
 
             .sort-select {
                 font-size: 0.9rem;
+            }
+
+            .events-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
             }
         }
 
@@ -385,45 +556,98 @@
                 </div>
             </section>
 
-            <div class="filters-container">
-                <div class="filter-tabs">
-                    <button class="filter-tab active" data-category="all">Все</button>
-                    <button class="filter-tab" data-category="concert">Концерты</button>
-                    <button class="filter-tab" data-category="theater">Театр</button>
-                    <button class="filter-tab" data-category="exhibition">Выставки</button>
-                    <button class="filter-tab" data-category="sport">Спорт</button>
-                    <button class="filter-tab" data-category="kids">Детям</button>
-                </div>
-                <div class="sort-container">
-                    <select id="sortSelect" class="sort-select" onchange="updateSort(this.value)">
-                        <option value="title">По названию</option>
-                        <option value="popular">По популярности</option>
-                        <option value="date">По дате (сначала ближайшие)</option>
-                        <option value="date-desc">По дате (сначала дальние)</option>
-                        <option value="price-asc">По цене (по возрастанию)</option>
-                        <option value="price-desc">По цене (по убыванию)</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="events-grid">
-                {{range .Events}}
-                <a href="/events/{{.ID}}" class="event-card">
-                    <img src="{{.Image}}" alt="{{.Title}}" class="event-image">
-                    <div class="event-content">
-                        <div class="event-date">
-                            <i class="far fa-calendar-alt"></i>
-                            {{.DateTime.Format "02.01.2006"}}
-                        </div>
-                        <h3 class="event-title">{{.Title}}</h3>
-                        <div class="event-location">
-                            <i class="fas fa-map-marker-alt"></i>
-                            {{.Location}}
-                        </div>
-                        <div class="event-price">{{.Price}} ₽</div>
+            <div class="main-layout">
+                <!-- Filters Sidebar -->
+                <aside class="filters-sidebar">
+                    <h3 class="filters-title">
+                        <i class="fas fa-filter"></i>
+                        Фильтры
+                    </h3>
+                    
+                    <div class="filter-section">
+                        <label class="filter-label">Категория</label>
+                        <select id="categoryFilter" class="filter-select">
+                            <option value="">Все категории</option>
+                            <option value="concert">Концерты</option>
+                            <option value="theatre">Театр</option>
+                            <option value="exhibition">Выставки</option>
+                            <option value="sport">Спорт</option>
+                            <option value="kids">Детям</option>
+                        </select>
                     </div>
-                </a>
-                {{end}}
+
+                    <div class="filter-section">
+                        <label class="filter-label">Диапазон цен (₽)</label>
+                        <div class="price-range">
+                            <input type="number" id="minPrice" class="price-input" placeholder="От" min="0">
+                            <span>-</span>
+                            <input type="number" id="maxPrice" class="price-input" placeholder="До" min="0">
+                        </div>
+                    </div>
+
+                    <div class="filter-section">
+                        <label class="filter-label">Диапазон дат</label>
+                        <div class="date-range">
+                            <input type="date" id="startDate" class="date-input">
+                            <span>-</span>
+                            <input type="date" id="endDate" class="date-input">
+                        </div>
+                    </div>
+
+                    <button type="button" class="apply-filters-btn" onclick="applyFilters()">
+                        <i class="fas fa-check"></i>
+                        Применить фильтры
+                    </button>
+                    
+                    <button type="button" class="clear-filters-btn" onclick="clearFilters()">
+                        <i class="fas fa-times"></i>
+                        Очистить фильтры
+                    </button>
+                </aside>
+
+                <!-- Content Area -->
+                <div class="content-area">
+                    <div class="filters-container">
+                        <div class="filter-tabs">
+                            <button class="filter-tab active" data-category="all">Все</button>
+                            <button class="filter-tab" data-category="concert">Концерты</button>
+                            <button class="filter-tab" data-category="theatre">Театр</button>
+                            <button class="filter-tab" data-category="exhibition">Выставки</button>
+                            <button class="filter-tab" data-category="sport">Спорт</button>
+                            <button class="filter-tab" data-category="kids">Детям</button>
+                        </div>
+                        <div class="sort-container">
+                            <select id="sortSelect" class="sort-select" onchange="updateSort(this.value)">
+                                <option value="title">По названию</option>
+                                <option value="popular">По популярности</option>
+                                <option value="date">По дате (сначала ближайшие)</option>
+                                <option value="date-desc">По дате (сначала дальние)</option>
+                                <option value="price-asc">По цене (по возрастанию)</option>
+                                <option value="price-desc">По цене (по убыванию)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="events-grid">
+                        {{range .Events}}
+                        <a href="/events/{{.ID}}" class="event-card">
+                            <img src="{{.Image}}" alt="{{.Title}}" class="event-image">
+                            <div class="event-content">
+                                <div class="event-date">
+                                    <i class="far fa-calendar-alt"></i>
+                                    {{.DateTime.Format "02.01.2006"}}
+                                </div>
+                                <h3 class="event-title">{{.Title}}</h3>
+                                <div class="event-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    {{.Location}}
+                                </div>
+                                <div class="event-price">{{.Price}} ₽</div>
+                            </div>
+                        </a>
+                        {{end}}
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -431,7 +655,7 @@
         {{if .Pagination.TotalPages}}
         <div class="pagination">
             {{if gt .Pagination.CurrentPage 1}}
-            <a href="?page={{subtract .Pagination.CurrentPage 1}}&sort={{.SortType}}&category={{.Category}}&search={{.SearchQuery}}" class="pagination-link" title="Предыдущая страница">
+            <a href="?page={{subtract .Pagination.CurrentPage 1}}&sort={{.SortType}}&category={{.Category}}&search={{.SearchQuery}}&min_price={{.MinPrice}}&max_price={{.MaxPrice}}&start_date={{.StartDate}}&end_date={{.EndDate}}" class="pagination-link" title="Предыдущая страница">
                 <i class="fas fa-chevron-left"></i>
             </a>
             {{end}}
@@ -441,7 +665,7 @@
             {{$delta := 2}}
 
             {{/* Показываем первую страницу */}}
-            <a href="?page=1&sort={{.SortType}}&category={{.Category}}&search={{.SearchQuery}}" 
+            <a href="?page=1&sort={{.SortType}}&category={{.Category}}&search={{.SearchQuery}}&min_price={{.MinPrice}}&max_price={{.MaxPrice}}&start_date={{.StartDate}}&end_date={{.EndDate}}" 
                class="pagination-link {{if eq $current 1}}active{{end}}">
                 1
             </a>
@@ -453,7 +677,7 @@
 
             {{/* Показываем страницы вокруг текущей */}}
             {{range $i := sequence (max 2 (subtract $current $delta)) (min (subtract $total 1) (add $current $delta))}}
-            <a href="?page={{$i}}&sort={{$.SortType}}&category={{$.Category}}&search={{$.SearchQuery}}" 
+            <a href="?page={{$i}}&sort={{$.SortType}}&category={{$.Category}}&search={{$.SearchQuery}}&min_price={{$.MinPrice}}&max_price={{$.MaxPrice}}&start_date={{$.StartDate}}&end_date={{$.EndDate}}" 
                class="pagination-link {{if eq $i $.Pagination.CurrentPage}}active{{end}}">
                 {{$i}}
             </a>
@@ -466,14 +690,14 @@
 
             {{/* Показываем последнюю страницу, если она не первая */}}
             {{if gt $total 1}}
-            <a href="?page={{$total}}&sort={{.SortType}}&category={{.Category}}&search={{.SearchQuery}}" 
+            <a href="?page={{$total}}&sort={{.SortType}}&category={{.Category}}&search={{.SearchQuery}}&min_price={{.MinPrice}}&max_price={{.MaxPrice}}&start_date={{.StartDate}}&end_date={{.EndDate}}" 
                class="pagination-link {{if eq $current $total}}active{{end}}">
                 {{$total}}
             </a>
             {{end}}
 
             {{if lt .Pagination.CurrentPage .Pagination.TotalPages}}
-            <a href="?page={{add .Pagination.CurrentPage 1}}&sort={{.SortType}}&category={{.Category}}&search={{.SearchQuery}}" class="pagination-link" title="Следующая страница">
+            <a href="?page={{add .Pagination.CurrentPage 1}}&sort={{.SortType}}&category={{.Category}}&search={{.SearchQuery}}&min_price={{.MinPrice}}&max_price={{.MaxPrice}}&start_date={{.StartDate}}&end_date={{.EndDate}}" class="pagination-link" title="Следующая страница">
                 <i class="fas fa-chevron-right"></i>
             </a>
             {{end}}
@@ -511,11 +735,109 @@
             window.location.search = urlParams.toString();
         }
 
+        // Advanced filters functionality
+        function applyFilters() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Get filter values
+            const category = document.getElementById('categoryFilter').value;
+            const minPrice = document.getElementById('minPrice').value;
+            const maxPrice = document.getElementById('maxPrice').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            console.log('Applying filters:', {
+                category,
+                minPrice,
+                maxPrice,
+                startDate,
+                endDate
+            });
+            
+            // Update URL parameters
+            if (category && category !== '') {
+                urlParams.set('category', category);
+            } else {
+                urlParams.delete('category');
+            }
+            
+            if (minPrice && minPrice !== '') {
+                urlParams.set('min_price', minPrice);
+            } else {
+                urlParams.delete('min_price');
+            }
+            
+            if (maxPrice && maxPrice !== '') {
+                urlParams.set('max_price', maxPrice);
+            } else {
+                urlParams.delete('max_price');
+            }
+            
+            if (startDate && startDate !== '') {
+                urlParams.set('start_date', startDate);
+            } else {
+                urlParams.delete('start_date');
+            }
+            
+            if (endDate && endDate !== '') {
+                urlParams.set('end_date', endDate);
+            } else {
+                urlParams.delete('end_date');
+            }
+            
+            // Reset page to 1 when applying filters
+            urlParams.set('page', '1');
+            
+            console.log('New URL params:', urlParams.toString());
+            
+            // Navigate to filtered results
+            window.location.search = urlParams.toString();
+        }
+
+        function clearFilters() {
+            // Clear filter inputs
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('minPrice').value = '';
+            document.getElementById('maxPrice').value = '';
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            
+            // Clear URL parameters except search and sort
+            const urlParams = new URLSearchParams(window.location.search);
+            const search = urlParams.get('search');
+            const sort = urlParams.get('sort') || 'date';
+            
+            // Create new URL with only search and sort
+            const newParams = new URLSearchParams();
+            if (search) {
+                newParams.set('search', search);
+            }
+            if (sort) {
+                newParams.set('sort', sort);
+            }
+            
+            // Navigate to cleared filters
+            window.location.search = newParams.toString();
+        }
+
         // Set active filter tab based on URL
         document.addEventListener('DOMContentLoaded', function() {
             const urlParams = new URLSearchParams(window.location.search);
             const category = urlParams.get('category') || 'all';
             const sort = urlParams.get('sort') || 'date';
+            const minPrice = urlParams.get('min_price');
+            const maxPrice = urlParams.get('max_price');
+            const startDate = urlParams.get('start_date');
+            const endDate = urlParams.get('end_date');
+            
+            console.log('Initializing filters from URL:', {
+                category,
+                sort,
+                minPrice,
+                maxPrice,
+                startDate,
+                endDate
+            });
             
             // Set active category tab
             document.querySelectorAll('.filter-tab').forEach(tab => {
@@ -532,6 +854,26 @@
                 sortSelect.value = sort;
             }
             
+            // Set filter values
+            if (minPrice) {
+                document.getElementById('minPrice').value = minPrice;
+            }
+            if (maxPrice) {
+                document.getElementById('maxPrice').value = maxPrice;
+            }
+            if (startDate) {
+                document.getElementById('startDate').value = startDate;
+            }
+            if (endDate) {
+                document.getElementById('endDate').value = endDate;
+            }
+            
+            // Set category filter
+            const categoryFilter = document.getElementById('categoryFilter');
+            if (categoryFilter && category !== 'all') {
+                categoryFilter.value = category;
+            }
+            
             // Set search input value
             const searchQuery = urlParams.get('search');
             if (searchQuery) {
@@ -544,6 +886,31 @@
             tab.addEventListener('click', function() {
                 updateCategory(this.dataset.category);
             });
+        });
+
+        // Add enter key support for filter inputs
+        document.getElementById('minPrice').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                applyFilters();
+            }
+        });
+        
+        document.getElementById('maxPrice').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                applyFilters();
+            }
+        });
+        
+        document.getElementById('startDate').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                applyFilters();
+            }
+        });
+        
+        document.getElementById('endDate').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                applyFilters();
+            }
         });
     </script>
 </body>

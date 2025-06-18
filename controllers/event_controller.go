@@ -29,11 +29,15 @@ func ShowMainPage(c *gin.Context) {
 	searchQuery := c.Query("search")
 	sortType := c.Query("sort")
 	category := c.Query("category")
+	minPrice := c.Query("min_price")
+	maxPrice := c.Query("max_price")
+	startDate := c.Query("start_date")
+	endDate := c.Query("end_date")
 	page := c.DefaultQuery("page", "1")
 	pageSize := c.DefaultQuery("page_size", "12")
 	
-	log.Printf("Starting ShowMainPage with search: %s, sort: %s, category: %s, page: %s", 
-		searchQuery, sortType, category, page)
+	log.Printf("Starting ShowMainPage with search: %s, sort: %s, category: %s, minPrice: %s, maxPrice: %s, startDate: %s, endDate: %s, page: %s", 
+		searchQuery, sortType, category, minPrice, maxPrice, startDate, endDate, page)
 	
 	// Преобразуем параметры пагинации
 	pageNum, _ := strconv.Atoi(page)
@@ -58,6 +62,44 @@ func ShowMainPage(c *gin.Context) {
 	// Применяем фильтр по категории
 	if category != "" && category != "all" {
 		query = query.Where("category = ?", category)
+	}
+
+	// Применяем фильтр по цене
+	if minPrice != "" {
+		if minPriceFloat, err := strconv.ParseFloat(minPrice, 64); err == nil {
+			log.Printf("Applying min price filter: %f", minPriceFloat)
+			query = query.Where("price >= ?", minPriceFloat)
+		} else {
+			log.Printf("Error parsing min price: %v", err)
+		}
+	}
+	if maxPrice != "" {
+		if maxPriceFloat, err := strconv.ParseFloat(maxPrice, 64); err == nil {
+			log.Printf("Applying max price filter: %f", maxPriceFloat)
+			query = query.Where("price <= ?", maxPriceFloat)
+		} else {
+			log.Printf("Error parsing max price: %v", err)
+		}
+	}
+
+	// Применяем фильтр по дате
+	if startDate != "" {
+		if startDateTime, err := time.Parse("2006-01-02", startDate); err == nil {
+			log.Printf("Applying start date filter: %v", startDateTime)
+			query = query.Where("date_time >= ?", startDateTime)
+		} else {
+			log.Printf("Error parsing start date: %v", err)
+		}
+	}
+	if endDate != "" {
+		if endDateTime, err := time.Parse("2006-01-02", endDate); err == nil {
+			// Добавляем 23:59:59 к дате окончания для включения всего дня
+			endDateTime = endDateTime.Add(24*time.Hour - time.Second)
+			log.Printf("Applying end date filter: %v", endDateTime)
+			query = query.Where("date_time <= ?", endDateTime)
+		} else {
+			log.Printf("Error parsing end date: %v", err)
+		}
 	}
 	
 	// Получаем текущее время
@@ -135,6 +177,10 @@ func ShowMainPage(c *gin.Context) {
 		"SearchQuery": searchQuery,
 		"SortType": sortType,
 		"Category": category,
+		"MinPrice": minPrice,
+		"MaxPrice": maxPrice,
+		"StartDate": startDate,
+		"EndDate": endDate,
 		"IsAuthenticated": userID != nil,
 		"Username": username,
 		"Pagination": gin.H{
