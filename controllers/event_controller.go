@@ -354,3 +354,101 @@ func ShowEvents(c *gin.Context) {
 		"categories":  []string{"concert", "theater", "exhibition", "sport", "other"},
 	})
 }
+
+func (ec *EventController) ReturnTicket(c *gin.Context) {
+	eventID := c.Param("id")
+	userID := sessions.Default(c).Get("user_id")
+
+	if userID == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Необходимо авторизоваться"})
+		return
+	}
+
+	// Получаем количество билетов для возврата из формы
+	quantityStr := c.PostForm("quantity")
+	quantity, err := strconv.Atoi(quantityStr)
+	if err != nil || quantity <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Неверное количество билетов"})
+		return
+	}
+
+	// Начинаем транзакцию
+	tx := ec.db.Begin()
+	if tx.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при обработке запроса"})
+		return
+	}
+
+	// Получаем информацию о событии
+	var event models.Event
+	if err := tx.First(&event, eventID).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusNotFound, gin.H{"error": "Событие не найдено"})
+		return
+	}
+
+	// Проверяем существующие билеты пользователя
+	var userTicket models.UserTicket
+	err = tx.Where("user_id = ? AND event_id = ?", userID, eventID).First(&userTicket).Error
+
+	if err != nil {
+		tx.Rollback()
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "У вас нет билетов на это мероприятие"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при проверке билетов"})
+		}
+		return
+	}
+
+	// Проверяем, что пользователь не пытается вернуть больше билетов, чем у него есть
+	if quantity > userTicket.Quantity {
+		tx.Rollback()
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Нельзя вернуть больше билетов, чем у вас есть"})
+		return
+	}
+
+	// Проверяем, что мероприятие еще не прошло
+	if event.DateTime.Before(time.Now()) {
+		tx.Rollback()
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Нельзя вернуть билеты на прошедшее мероприятие"})
+		return
+	}
+
+	// Обновляем количество билетов пользователя
+	if quantity == userTicket.Quantity {
+		// Если возвращаем все билеты, удаляем запись
+		if err := tx.Delete(&userTicket).Error; err != nil {
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при удалении билетов"})
+			return
+		}
+	} else {
+		// Иначе уменьшаем количество
+		userTicket.Quantity -= quantity
+		if err := tx.Save(&userTicket).Error; err != nil {
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при обновлении билетов"})
+			return
+		}
+	}
+
+	// Обновляем количество проданных билетов
+	event.SoldTickets -= quantity
+	if err := tx.Save(&event).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при обновлении события"})
+		return
+	}
+
+	// Завершаем транзакцию
+	if err := tx.Commit().Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при завершении транзакции"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": fmt.Sprintf("Успешно возвращено %d билетов", quantity),
+		"returned": quantity,
+	})
+}
