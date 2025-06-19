@@ -15,4 +15,5 @@ type Event struct {
 	TotalTickets int       `gorm:"not null"`
 	SoldTickets  int       `gorm:"default:0"`
 	Category     string    `gorm:"not null;default:'concert'"`
+	AdminID      uint      `gorm:"not null"`
 }

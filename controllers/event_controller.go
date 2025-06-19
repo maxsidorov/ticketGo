@@ -1,17 +1,17 @@
 package controllers
 
 import (
+	"fmt"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/maxsidorov/ticketGo/models"
 	"github.com/maxsidorov/ticketGo/db"
+	"github.com/maxsidorov/ticketGo/models"
+	"gorm.io/gorm"
+	"log"
+	"math"
 	"net/http"
 	"strconv"
-	"gorm.io/gorm"
-	"github.com/gin-contrib/sessions"
-	"log"
 	"time"
-	"math"
-	"fmt"
 )
 
 type EventController struct {
@@ -31,10 +31,10 @@ func ShowMainPage(c *gin.Context) {
 	category := c.Query("category")
 	page := c.DefaultQuery("page", "1")
 	pageSize := c.DefaultQuery("page_size", "12")
-	
-	log.Printf("Starting ShowMainPage with search: %s, sort: %s, category: %s, page: %s", 
+
+	log.Printf("Starting ShowMainPage with search: %s, sort: %s, category: %s, page: %s",
 		searchQuery, sortType, category, page)
-	
+
 	// Преобразуем параметры пагинации
 	pageNum, _ := strconv.Atoi(page)
 	pageSizeNum, _ := strconv.Atoi(pageSize)
@@ -45,13 +45,13 @@ func ShowMainPage(c *gin.Context) {
 		pageSizeNum = 12
 	}
 	offset := (pageNum - 1) * pageSizeNum
-	
+
 	// Создаем базовый запрос
 	query := db.DB.Model(&models.Event{})
-	
+
 	// Применяем поиск с использованием ILIKE для регистронезависимого поиска
 	if searchQuery != "" {
-		query = query.Where("title ILIKE ? OR description ILIKE ?", 
+		query = query.Where("title ILIKE ? OR description ILIKE ?",
 			"%"+searchQuery+"%", "%"+searchQuery+"%")
 	}
 
@@ -59,13 +59,13 @@ func ShowMainPage(c *gin.Context) {
 	if category != "" && category != "all" {
 		query = query.Where("category = ?", category)
 	}
-	
+
 	// Получаем текущее время
 	now := time.Now()
-	
+
 	// Разделяем запрос на предстоящие и прошедшие события
 	var upcomingEvents, pastEvents []models.Event
-	
+
 	// Получаем предстоящие события
 	upcomingQuery := query.Where("date_time >= ?", now)
 	switch sortType {
@@ -84,30 +84,30 @@ func ShowMainPage(c *gin.Context) {
 	default:
 		upcomingQuery = upcomingQuery.Order("date_time ASC")
 	}
-	
+
 	if err := upcomingQuery.Find(&upcomingEvents).Error; err != nil {
 		log.Printf("Error fetching upcoming events: %v", err)
 		c.HTML(http.StatusInternalServerError, "index.html", gin.H{
-			"error": "Ошибка при получении мероприятий",
+			"error":           "Ошибка при получении мероприятий",
 			"IsAuthenticated": c.GetBool("is_authenticated"),
 		})
 		return
 	}
-	
+
 	// Получаем прошедшие события
 	pastQuery := query.Where("date_time < ?", now).Order("date_time DESC")
 	if err := pastQuery.Find(&pastEvents).Error; err != nil {
 		log.Printf("Error fetching past events: %v", err)
 		c.HTML(http.StatusInternalServerError, "index.html", gin.H{
-			"error": "Ошибка при получении мероприятий",
+			"error":           "Ошибка при получении мероприятий",
 			"IsAuthenticated": c.GetBool("is_authenticated"),
 		})
 		return
 	}
-	
+
 	// Объединяем события
 	events = append(upcomingEvents, pastEvents...)
-	
+
 	// Применяем пагинацию
 	total := len(events)
 	start := offset
@@ -118,10 +118,10 @@ func ShowMainPage(c *gin.Context) {
 	if end > total {
 		end = total
 	}
-	
+
 	// Получаем страницу событий
 	pageEvents := events[start:end]
-	
+
 	// Получаем информацию о пользователе из сессии
 	session := sessions.Default(c)
 	username := session.Get("username")
@@ -129,19 +129,18 @@ func ShowMainPage(c *gin.Context) {
 
 	// Рассчитываем информацию о пагинации
 	totalPages := int(math.Ceil(float64(total) / float64(pageSizeNum)))
-	
 	c.HTML(http.StatusOK, "index.html", gin.H{
-		"Events": pageEvents,
-		"SearchQuery": searchQuery,
-		"SortType": sortType,
-		"Category": category,
+		"Events":          pageEvents,
+		"SearchQuery":     searchQuery,
+		"SortType":        sortType,
+		"Category":        category,
 		"IsAuthenticated": userID != nil,
-		"Username": username,
+		"Username":        username,
 		"Pagination": gin.H{
 			"CurrentPage": pageNum,
-			"TotalPages": totalPages,
-			"TotalItems": total,
-			"PageSize": pageSizeNum,
+			"TotalPages":  totalPages,
+			"TotalItems":  total,
+			"PageSize":    pageSizeNum,
 		},
 	})
 }
@@ -184,11 +183,11 @@ func (ec *EventController) ShowEvent(c *gin.Context) {
 	log.Printf("Remaining tickets: %d", remainingTickets)
 
 	c.HTML(http.StatusOK, "event.html", gin.H{
-		"Event":           event,
-		"UserTickets":     userTickets,
+		"Event":            event,
+		"UserTickets":      userTickets,
 		"RemainingTickets": remainingTickets,
-		"IsAuthenticated": isAuthenticated,
-		"Username":        username,
+		"IsAuthenticated":  isAuthenticated,
+		"Username":         username,
 	})
 }
 
@@ -239,8 +238,8 @@ func (ec *EventController) BuyTicket(c *gin.Context) {
 		if err == gorm.ErrRecordNotFound {
 			// Создаем новую запись о билетах
 			newTicket := models.UserTicket{
-				UserID:  userID.(uint),
-				EventID: event.ID,
+				UserID:   userID.(uint),
+				EventID:  event.ID,
 				Quantity: quantity,
 			}
 			if err := tx.Create(&newTicket).Error; err != nil {
@@ -343,14 +342,14 @@ func ShowEvents(c *gin.Context) {
 	totalPages := (int(total) + pageSize - 1) / pageSize
 
 	c.HTML(http.StatusOK, "events.html", gin.H{
-		"events":      events,
-		"page":        page,
-		"pageSize":    pageSize,
-		"totalPages":  totalPages,
-		"total":       total,
-		"category":    category,
-		"search":      search,
-		"sort":        sort,
-		"categories":  []string{"concert", "theater", "exhibition", "sport", "other"},
+		"events":     events,
+		"page":       page,
+		"pageSize":   pageSize,
+		"totalPages": totalPages,
+		"total":      total,
+		"category":   category,
+		"search":     search,
+		"sort":       sort,
+		"categories": []string{"concert", "theater", "exhibition", "sport", "kids", "other"},
 	})
 }

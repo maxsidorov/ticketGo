@@ -2,17 +2,17 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/maxsidorov/ticketGo/config"
-	"github.com/maxsidorov/ticketGo/models"
-	"github.com/maxsidorov/ticketGo/storage"
-	"github.com/maxsidorov/ticketGo/db"
-	"github.com/maxsidorov/ticketGo/routes"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
+	"github.com/gin-gonic/gin"
+	"github.com/maxsidorov/ticketGo/config"
+	"github.com/maxsidorov/ticketGo/db"
+	"github.com/maxsidorov/ticketGo/middleware"
+	"github.com/maxsidorov/ticketGo/models"
+	"github.com/maxsidorov/ticketGo/routes"
+	"github.com/maxsidorov/ticketGo/storage"
 	"log"
 	"text/template"
-	"github.com/maxsidorov/ticketGo/middleware"
 	"time"
 )
 
@@ -33,23 +33,21 @@ func main() {
 	}
 
 	r := gin.Default()
-
 	sessionStore := cookie.NewStore([]byte("secret-key-123"))
 	r.Use(sessions.Sessions("session", sessionStore))
-
 	r.Use(func(c *gin.Context) {
 		session := sessions.Default(c)
 		username := session.Get("username")
 		userID := session.Get("user_id")
-		
+
 		if username != nil {
 			c.Set("username", username)
 		}
-		
+
 		if userID != nil {
 			c.Set("user_id", userID)
 		}
-		
+
 		c.Next()
 	})
 
