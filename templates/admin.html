@@ -44,6 +44,9 @@
     .btn-add:hover {
       background-color: #45a049;
     }
+    .btn-back {
+      background-color: #FF0000;
+    }
     .btn-edit {
       background-color: #2196F3;
     }
@@ -108,8 +111,10 @@
   <h1>Управление событиями</h1>
 
   <div class="actions">
+    <a href="/" class="btn btn-back">Назад</a>
     <a href="/admin/events/new" class="btn btn-add">Добавить событие</a>
-    <a href="/admin/events/new" class="btn btn-add">Редактирование админов</a>
+    <a href="/admin/users" class="btn btn-add">Редактирование админов</a>
+    <a href="/admin/events/export" class="btn btn-add">Экспорт мероприятий</a>
     <div>
       <form action="/admin" method="GET" class="search-form">
         <input

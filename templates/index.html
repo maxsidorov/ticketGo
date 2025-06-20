@@ -409,7 +409,7 @@
             <div class="events-grid">
                 {{range .Events}}
                 <a href="/events/{{.ID}}" class="event-card">
-                    <img src="{{.Image}}" alt="{{.Title}}" class="event-image">
+                    <img src="{{.Image}}" alt="{{.Title}}" onerror="this.src='/static/placeholder.jpg'" class="event-image">
                     <div class="event-content">
                         <div class="event-date">
                             <i class="far fa-calendar-alt"></i>

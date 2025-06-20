@@ -32,9 +32,6 @@ func ShowMainPage(c *gin.Context) {
 	page := c.DefaultQuery("page", "1")
 	pageSize := c.DefaultQuery("page_size", "12")
 
-	log.Printf("Starting ShowMainPage with search: %s, sort: %s, category: %s, page: %s",
-		searchQuery, sortType, category, page)
-
 	// Преобразуем параметры пагинации
 	pageNum, _ := strconv.Atoi(page)
 	pageSizeNum, _ := strconv.Atoi(pageSize)

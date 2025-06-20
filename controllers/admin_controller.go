@@ -103,15 +103,20 @@ func AddEventPage(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Некорректный формат даты и времени"})
 			return
 		}
+		datetime = time.Date(
+			datetime.Year(),
+			datetime.Month(),
+			datetime.Day(),
+			datetime.Hour(),
+			datetime.Minute(),
+			datetime.Second(),
+			datetime.Nanosecond(),
+			time.Local,
+		)
+
 		fileHeader, err := c.FormFile("image")
 		var uploadPath string
 		if err == nil {
-
-			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "Требуется изображение"})
-				return
-			}
-
 			// Открываем загруженный файл
 			file, err := fileHeader.Open()
 			if err != nil {
@@ -179,4 +184,51 @@ func AddEventPage(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "event_add.html", gin.H{})
+}
+
+func AdminUsersPage(c *gin.Context) {
+	searchQuery := c.Query("search")
+	var users []models.User
+
+	query := db.DB.Model(&models.User{})
+	if searchQuery != "" {
+		query = query.Where("username LIKE ? OR email LIKE ?",
+			"%"+searchQuery+"%", "%"+searchQuery+"%")
+	}
+	query.Find(&users)
+
+	c.HTML(http.StatusOK, "admin_users.html", gin.H{
+		"Users":       users,
+		"SearchQuery": searchQuery,
+		"Success":     c.Query("success"),
+		"Error":       c.Query("error"),
+	})
+}
+
+func UpdateUserAdminLevel(c *gin.Context) {
+	userID := c.PostForm("user_id")
+	adminLevel, err := strconv.Atoi(c.PostForm("admin_level"))
+	if err != nil {
+		c.Redirect(http.StatusFound, "/admin/users?error=Неверный уровень доступа")
+		return
+	}
+
+	if err := db.DB.Model(&models.User{}).Where("id = ?", userID).
+		Update("admin_level", adminLevel).Error; err != nil {
+		c.Redirect(http.StatusFound, "/admin/users?error=Ошибка обновления пользователя")
+		return
+	}
+
+	c.Redirect(http.StatusFound, "/admin/users?success=Уровень доступа обновлен")
+}
+
+func DeleteUser(c *gin.Context) {
+	userID := c.Param("id")
+
+	if err := db.DB.Delete(&models.User{}, userID).Error; err != nil {
+		c.Redirect(http.StatusFound, "/admin/users?error=Ошибка удаления пользователя")
+		return
+	}
+
+	c.Redirect(http.StatusFound, "/admin/users?success=Пользователь удален")
 }

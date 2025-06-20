@@ -313,7 +313,7 @@
                             <div class="tickets-grid">
                                 {{range .UpcomingTickets}}
                                 <div class="ticket-card">
-                                    <img src="{{.Event.Image}}" alt="{{.Event.Title}}" class="ticket-image" onerror="this.src='/static/images/placeholder.jpg'">
+                                    <img src="{{.Event.Image}}" alt="{{.Event.Title}}" class="ticket-image" onerror="this.src='/static/placeholder.jpg'">
                                     <div class="ticket-content">
                                         <a href="/events/{{.Event.ID}}" class="ticket-title">{{.Event.Title}}</a>
                                         <div class="ticket-info">
@@ -329,6 +329,7 @@
                                                 <i class="fas fa-ticket-alt"></i>
                                                 Количество билетов: {{.Quantity}}
                                             </p>
+                                            <a href="/static/b976c7c6d52c5ac90fb24b716d34b9ee25dc4d57.jpeg">qr</a>
                                         </div>
                                     </div>
                                 </div>
@@ -343,7 +344,7 @@
                             <div class="tickets-grid">
                                 {{range .PastTickets}}
                                 <div class="ticket-card">
-                                    <img src="{{.Event.Image}}" alt="{{.Event.Title}}" class="ticket-image" onerror="this.src='/static/images/placeholder.jpg'">
+                                    <img src="{{.Event.Image}}" alt="{{.Event.Title}}" class="ticket-image" onerror="this.src='/static/placeholder.jpg'">
                                     <div class="ticket-content">
                                         <a href="/events/{{.Event.ID}}" class="ticket-title">{{.Event.Title}}</a>
                                         <div class="ticket-info">
