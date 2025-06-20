@@ -2,23 +2,32 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/maxsidorov/ticketGo/config"
-	"github.com/maxsidorov/ticketGo/models"
-	"github.com/maxsidorov/ticketGo/storage"
-	"github.com/maxsidorov/ticketGo/db"
-	"github.com/maxsidorov/ticketGo/routes"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
-	"log"
-	"text/template"
+	"github.com/gin-gonic/gin"
+	"github.com/maxsidorov/ticketGo/config"
+	"github.com/maxsidorov/ticketGo/db"
 	"github.com/maxsidorov/ticketGo/middleware"
+	"github.com/maxsidorov/ticketGo/models"
+	"github.com/maxsidorov/ticketGo/routes"
+	"github.com/maxsidorov/ticketGo/storage"
+	"golang.org/x/crypto/bcrypt"
+	"log"
+	"net/http"
+	"text/template"
 	"time"
+	"gorm.io/gorm"
 )
+
+func hashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
 
 func main() {
 	cfg := config.Load()
 	var err error
+	var password string
 	db.DB, err = storage.InitPostgresGorm(cfg)
 	if err != nil {
 		panic(fmt.Sprintf("failed to connect to db: %v", err))
@@ -32,24 +41,30 @@ func main() {
 		log.Printf("AutoMigrate completed successfully")
 	}
 
-	r := gin.Default()
+	sessionStore := cookie.NewStore([]byte("Mhvr56GCf65ucfjHD65fjwedo"))
+	sessionStore.Options(sessions.Options{
+		Path:     "/",
+		MaxAge:   86400 * 7, // 7 дней
+		HttpOnly: true,
+		Secure:   false,     // true только если у тебя HTTPS!
+		SameSite: http.SameSiteLaxMode,
+	})
 
-	sessionStore := cookie.NewStore([]byte("secret-key-123"))
 	r.Use(sessions.Sessions("session", sessionStore))
 
 	r.Use(func(c *gin.Context) {
 		session := sessions.Default(c)
 		username := session.Get("username")
 		userID := session.Get("user_id")
-		
+
 		if username != nil {
 			c.Set("username", username)
 		}
-		
+
 		if userID != nil {
 			c.Set("user_id", userID)
 		}
-		
+
 		c.Next()
 	})
 
@@ -93,6 +108,30 @@ func main() {
 
 	// Регистрируем все маршруты
 	routes.RegisterRoutes(r, db.DB)
+	// Создание пользователя admin, если его нет
+	var adminUser models.User
+	if err := db.DB.Where("username = ?", "admin").First(&adminUser).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			password, err := hashPassword("admin")
+			if err != nil {
+				log.Printf("Не удалось захешировать пароль для admin: %v", err)
+			} else {
+				admin := models.User{
+					Username:   "admin",
+					Password:   password,
+					Email:      "admin@admin.com",
+					AdminLevel: 2,
+					CreatedAt:  time.Now(),
+					UpdatedAt:  time.Now(),
+				}
+				if err := db.DB.Create(&admin).Error; err != nil {
+					log.Printf("Ошибка при создании пользователя admin: %v", err)
+				} else {
+					log.Printf("Пользователь admin успешно создан")
+				}
+			}
+		}
+	}
 
 	if err := r.Run(":" + cfg.Port); err != nil {
 		panic(fmt.Sprintf("failed to start server: %v", err))

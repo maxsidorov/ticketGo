@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	"github.com/maxsidorov/ticketGo/models"
 	"github.com/maxsidorov/ticketGo/db"
@@ -66,7 +67,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusFound, "/")
+	c.Redirect(http.StatusOK, "/")
 }
 
 func Register(c *gin.Context) {
@@ -153,14 +154,14 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusFound, "/")
+	c.Redirect(http.StatusOK, "/")
 }
 
 func Logout(c *gin.Context) {
 	session := sessions.Default(c)
 	session.Clear()
 	session.Save()
-	c.Redirect(http.StatusFound, "/")
+	c.Redirect(http.StatusOK, "/")
 }
 
 func CheckAuth(c *gin.Context) {
