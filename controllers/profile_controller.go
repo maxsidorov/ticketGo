@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/maxsidorov/ticketGo/db"
 	"github.com/maxsidorov/ticketGo/models"
 	"github.com/maxsidorov/ticketGo/service"
-	"github.com/gin-contrib/sessions"
 )
 
 func ShowProfile(c *gin.Context) {
@@ -72,11 +72,11 @@ func UpdateProfile(c *gin.Context) {
 	if err := c.ShouldBindJSON(&formData); err != nil {
 		// Если не получилось, пробуем получить из формы
 		if err := c.ShouldBind(&formData); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"success": false,
-			"error":   "Неверный формат данных",
-		})
-		return
+			c.JSON(http.StatusBadRequest, gin.H{
+				"success": false,
+				"error":   "Неверный формат данных",
+			})
+			return
 		}
 	}
 
@@ -158,4 +158,4 @@ func UpdateProfile(c *gin.Context) {
 		"success": true,
 		"message": "Настройки успешно сохранены",
 	})
-} 
+}

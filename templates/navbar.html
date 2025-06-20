@@ -124,7 +124,9 @@
                         <i class="far fa-user"></i>
                     </a>
                     <a href="/logout" class="nav-button">Выйти</a>
+                    {{if .AdminLevel}}
                     <a href="/admin" class="nav-button">Админ</a>
+                    {{end}}
                 {{else}}
                     <a href="/login" class="nav-link {{if eq .CurrentPage "login"}}active{{end}}">Войти</a>
                     <a href="/register" class="nav-button">Регистрация</a>

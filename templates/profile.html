@@ -266,7 +266,22 @@
         .save-btn:hover i {
             transform: translateX(2px);
         }
+        .btn-qr {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 3px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
 
+        .btn-qr:hover {
+            background-color: #45a049;
+        }
         @media (max-width: 768px) {
             .profile-layout {
                 grid-template-columns: 1fr;
@@ -329,7 +344,9 @@
                                                 <i class="fas fa-ticket-alt"></i>
                                                 Количество билетов: {{.Quantity}}
                                             </p>
-                                            <a href="/static/b976c7c6d52c5ac90fb24b716d34b9ee25dc4d57.jpeg">qr</a>
+                                            <a href="/tickets/{{.ID}}/qr" class="btn-qr" download>
+                                                <i class="fas fa-qrcode"></i> Скачать QR-код
+                                            </a>
                                         </div>
                                     </div>
                                 </div>

@@ -12,11 +12,13 @@ import (
 	"github.com/maxsidorov/ticketGo/routes"
 	"github.com/maxsidorov/ticketGo/storage"
 	"log"
+	"runtime/debug"
 	"text/template"
 	"time"
 )
 
 func main() {
+	debug.SetGCPercent(200)
 	cfg := config.Load()
 	var err error
 	db.DB, err = storage.InitPostgresGorm(cfg)

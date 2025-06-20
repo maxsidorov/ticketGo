@@ -27,6 +27,16 @@ func AdminPage(c *gin.Context) {
 	query := db.DB.Model(&models.Event{})
 	query = query.Where("admin_id = ?", userID)
 
+	username := session.Get("username")
+	var user models.User
+	db.DB.Where("username = ?", username).First(&user)
+	if user.AdminLevel == 0 {
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"IsAuthenticated": c.GetBool("is_authenticated"),
+		})
+		return
+	}
+
 	search := c.Query("search")
 	if search != "" {
 		query = query.Where("title LIKE ? OR description LIKE ?", "%"+search+"%", "%"+search+"%")
@@ -191,6 +201,22 @@ func AdminUsersPage(c *gin.Context) {
 	var users []models.User
 
 	query := db.DB.Model(&models.User{})
+
+	session := sessions.Default(c)
+	username := session.Get("username")
+	var user models.User
+	db.DB.Where("username = ?", username).First(&user)
+	if user.AdminLevel != 2 {
+		var events []models.Event
+		queryDop := db.DB.Model(&models.Event{})
+		queryDop = queryDop.Where("admin_id = ?", user.ID)
+		queryDop.Find(&events)
+		c.HTML(http.StatusBadRequest, "admin.html", gin.H{
+			"events": events,
+		})
+		return
+	}
+
 	if searchQuery != "" {
 		query = query.Where("username LIKE ? OR email LIKE ?",
 			"%"+searchQuery+"%", "%"+searchQuery+"%")

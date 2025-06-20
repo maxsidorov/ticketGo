@@ -36,6 +36,7 @@ func RegisterRoutes(r *gin.Engine, db *gorm.DB) {
 	r.GET("/admin/users", controllers.AdminUsersPage)
 	r.POST("/admin/users/update", controllers.UpdateUserAdminLevel)
 	r.GET("/admin/users/delete/:id", controllers.DeleteUser)
+	r.GET("/tickets/:id/qr", controllers.GenerateTicketQR)
 	// Обработка 404
 	r.NoRoute(func(c *gin.Context) {
 		c.HTML(404, "404.html", gin.H{

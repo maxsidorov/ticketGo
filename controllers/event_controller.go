@@ -32,6 +32,11 @@ func ShowMainPage(c *gin.Context) {
 	page := c.DefaultQuery("page", "1")
 	pageSize := c.DefaultQuery("page_size", "12")
 
+	session := sessions.Default(c)
+	username := session.Get("username")
+	var user models.User
+	db.DB.Where("username = ?", username).First(&user)
+
 	// Преобразуем параметры пагинации
 	pageNum, _ := strconv.Atoi(page)
 	pageSizeNum, _ := strconv.Atoi(pageSize)
@@ -120,13 +125,12 @@ func ShowMainPage(c *gin.Context) {
 	pageEvents := events[start:end]
 
 	// Получаем информацию о пользователе из сессии
-	session := sessions.Default(c)
-	username := session.Get("username")
 	userID := session.Get("user_id")
 
 	// Рассчитываем информацию о пагинации
 	totalPages := int(math.Ceil(float64(total) / float64(pageSizeNum)))
 	c.HTML(http.StatusOK, "index.html", gin.H{
+		"AdminLevel":      user.AdminLevel,
 		"Events":          pageEvents,
 		"SearchQuery":     searchQuery,
 		"SortType":        sortType,
