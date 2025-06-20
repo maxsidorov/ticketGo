@@ -31,6 +31,14 @@ func RegisterRoutes(r *gin.Engine, db *gorm.DB) {
 	r.POST("/events/:id/buy", middleware.AuthRequired(), eventController.BuyTicket)
 	r.POST("/events/:id/return", middleware.AuthRequired(), eventController.ReturnTicket)
 
+	r.GET("/admin", controllers.AdminPage)
+	r.GET("/admin/events/new", controllers.AddEventPage)
+	r.POST("/admin/events/new", controllers.AddEventPage)
+	r.GET("/admin/events/export", controllers.ExportEvent)
+	r.GET("/admin/users", controllers.AdminUsersPage)
+	r.POST("/admin/users/update", controllers.UpdateUserAdminLevel)
+	r.GET("/admin/users/delete/:id", controllers.DeleteUser)
+	r.GET("/tickets/:id/qr", controllers.GenerateTicketQR)
 	// Обработка 404
 	r.NoRoute(func(c *gin.Context) {
 		c.HTML(404, "404.html", gin.H{

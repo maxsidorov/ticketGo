@@ -266,6 +266,18 @@
         .save-btn:hover i {
             transform: translateX(2px);
         }
+        .btn-qr {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 3px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
 
         .return-btn {
             margin-top: 1rem;
@@ -445,6 +457,9 @@
             cursor: not-allowed;
         }
 
+        .btn-qr:hover {
+            background-color: #45a049;
+        }
         @media (max-width: 768px) {
             .profile-layout {
                 grid-template-columns: 1fr;
@@ -491,7 +506,7 @@
                             <div class="tickets-grid">
                                 {{range .UpcomingTickets}}
                                 <div class="ticket-card">
-                                    <img src="{{.Event.Image}}" alt="{{.Event.Title}}" class="ticket-image" onerror="this.src='/static/images/placeholder.jpg'">
+                                    <img src="{{.Event.Image}}" alt="{{.Event.Title}}" class="ticket-image" onerror="this.src='/static/placeholder.jpg'">
                                     <div class="ticket-content">
                                         <a href="/events/{{.Event.ID}}" class="ticket-title">{{.Event.Title}}</a>
                                         <div class="ticket-info">
@@ -507,6 +522,9 @@
                                                 <i class="fas fa-ticket-alt"></i>
                                                 Количество билетов: {{.Quantity}}
                                             </p>
+                                            <a href="/tickets/{{.ID}}/qr" class="btn-qr" download>
+                                                <i class="fas fa-qrcode"></i> Скачать QR-код
+                                            </a>
                                         </div>
                                         <button type="button" class="return-btn" onclick="showReturnModal({{.Event.ID}}, {{.Quantity}}, '{{.Event.Title}}')">
                                             <i class="fas fa-undo"></i>
@@ -525,7 +543,7 @@
                             <div class="tickets-grid">
                                 {{range .PastTickets}}
                                 <div class="ticket-card">
-                                    <img src="{{.Event.Image}}" alt="{{.Event.Title}}" class="ticket-image" onerror="this.src='/static/images/placeholder.jpg'">
+                                    <img src="{{.Event.Image}}" alt="{{.Event.Title}}" class="ticket-image" onerror="this.src='/static/placeholder.jpg'">
                                     <div class="ticket-content">
                                         <a href="/events/{{.Event.ID}}" class="ticket-title">{{.Event.Title}}</a>
                                         <div class="ticket-info">
@@ -561,10 +579,6 @@
                                 <div class="form-group">
                                     <label for="email">Email</label>
                                     <input type="email" id="email" name="email" value="{{.Email}}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="current_password">Текущий пароль</label>
-                                    <input type="password" id="current_password" name="current_password">
                                 </div>
                                 <div class="form-group">
                                     <label for="new_password">Новый пароль</label>
@@ -733,7 +747,7 @@
         function showReturnModal(eventId, maxQuantity, eventTitle) {
             currentEventId = eventId;
             currentMaxQuantity = maxQuantity;
-            
+
             document.getElementById('eventTitle').textContent = eventTitle;
             document.getElementById('returnQuantity').value = 1;
             document.getElementById('returnQuantity').max = maxQuantity;
@@ -774,7 +788,7 @@
         async function returnTickets() {
             const quantity = parseInt(document.getElementById('returnQuantity').value);
             const confirmCheckbox = document.getElementById('confirmReturn');
-            
+
             if (!confirmCheckbox.checked) {
                 showToast('danger', 'Необходимо подтвердить возврат билетов');
                 return;
@@ -795,7 +809,7 @@
                 });
 
                 const data = await response.json();
-                
+
                 if (response.ok) {
                     showToast('success', data.message);
                     hideReturnModal();
@@ -813,7 +827,7 @@
 
         // Event listeners for modal
         document.getElementById('confirmReturn').addEventListener('change', updateReturnButtonState);
-        
+
         // Close modal when clicking outside
         document.getElementById('returnModal').addEventListener('click', function(e) {
             if (e.target === this) {

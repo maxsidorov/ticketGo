@@ -4,13 +4,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/maxsidorov/ticketGo/models"
 	"github.com/maxsidorov/ticketGo/db"
-	"net/http"
-	"strconv"
 	"gorm.io/gorm"
 	"github.com/gin-contrib/sessions"
 	"log"
-	"time"
 	"math"
+	"net/http"
+	"strconv"
+	"time"
 	"fmt"
 )
 
@@ -35,10 +35,12 @@ func ShowMainPage(c *gin.Context) {
 	endDate := c.Query("end_date")
 	page := c.DefaultQuery("page", "1")
 	pageSize := c.DefaultQuery("page_size", "12")
-	
-	log.Printf("Starting ShowMainPage with search: %s, sort: %s, category: %s, minPrice: %s, maxPrice: %s, startDate: %s, endDate: %s, page: %s", 
-		searchQuery, sortType, category, minPrice, maxPrice, startDate, endDate, page)
-	
+
+	session := sessions.Default(c)
+	username := session.Get("username")
+	var user models.User
+	db.DB.Where("username = ?", username).First(&user)
+
 	// Преобразуем параметры пагинации
 	pageNum, _ := strconv.Atoi(page)
 	pageSizeNum, _ := strconv.Atoi(pageSize)
@@ -49,13 +51,13 @@ func ShowMainPage(c *gin.Context) {
 		pageSizeNum = 12
 	}
 	offset := (pageNum - 1) * pageSizeNum
-	
+
 	// Создаем базовый запрос
 	query := db.DB.Model(&models.Event{})
-	
+
 	// Применяем поиск с использованием ILIKE для регистронезависимого поиска
 	if searchQuery != "" {
-		query = query.Where("title ILIKE ? OR description ILIKE ?", 
+		query = query.Where("title ILIKE ? OR description ILIKE ?",
 			"%"+searchQuery+"%", "%"+searchQuery+"%")
 	}
 
@@ -101,13 +103,14 @@ func ShowMainPage(c *gin.Context) {
 			log.Printf("Error parsing end date: %v", err)
 		}
 	}
-	
+
+
 	// Получаем текущее время
 	now := time.Now()
-	
+
 	// Разделяем запрос на предстоящие и прошедшие события
 	var upcomingEvents, pastEvents []models.Event
-	
+
 	// Получаем предстоящие события
 	upcomingQuery := query.Where("date_time >= ?", now)
 	switch sortType {
@@ -126,7 +129,7 @@ func ShowMainPage(c *gin.Context) {
 	default:
 		upcomingQuery = upcomingQuery.Order("date_time ASC")
 	}
-	
+
 	if err := upcomingQuery.Find(&upcomingEvents).Error; err != nil {
 		log.Printf("Error fetching upcoming events: %v", err)
 		c.HTML(http.StatusInternalServerError, "index.html", gin.H{
@@ -165,13 +168,10 @@ func ShowMainPage(c *gin.Context) {
 	pageEvents := events[start:end]
 	
 	// Получаем информацию о пользователе из сессии
-	session := sessions.Default(c)
-	username := session.Get("username")
 	userID := session.Get("user_id")
 
 	// Рассчитываем информацию о пагинации
 	totalPages := int(math.Ceil(float64(total) / float64(pageSizeNum)))
-	
 	c.HTML(http.StatusOK, "index.html", gin.H{
 		"Events": pageEvents,
 		"SearchQuery": searchQuery,
@@ -181,6 +181,7 @@ func ShowMainPage(c *gin.Context) {
 		"MaxPrice": maxPrice,
 		"StartDate": startDate,
 		"EndDate": endDate,
+		"AdminLevel":      user.AdminLevel,
 		"IsAuthenticated": userID != nil,
 		"Username": username,
 		"Pagination": gin.H{

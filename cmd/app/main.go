@@ -14,6 +14,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
+	"runtime/debug"
 	"text/template"
 	"time"
 	"gorm.io/gorm"
@@ -25,9 +26,9 @@ func hashPassword(password string) (string, error) {
 }
 
 func main() {
+	debug.SetGCPercent(200)
 	cfg := config.Load()
 	var err error
-	var password string
 	db.DB, err = storage.InitPostgresGorm(cfg)
 	if err != nil {
 		panic(fmt.Sprintf("failed to connect to db: %v", err))
@@ -41,6 +42,8 @@ func main() {
 		log.Printf("AutoMigrate completed successfully")
 	}
 
+	r := gin.Default()
+
 	sessionStore := cookie.NewStore([]byte("Mhvr56GCf65ucfjHD65fjwedo"))
 	sessionStore.Options(sessions.Options{
 		Path:     "/",
@@ -49,22 +52,21 @@ func main() {
 		Secure:   false,     // true только если у тебя HTTPS!
 		SameSite: http.SameSiteLaxMode,
 	})
-
 	r.Use(sessions.Sessions("session", sessionStore))
 
 	r.Use(func(c *gin.Context) {
 		session := sessions.Default(c)
 		username := session.Get("username")
 		userID := session.Get("user_id")
-
+		
 		if username != nil {
 			c.Set("username", username)
 		}
-
+		
 		if userID != nil {
 			c.Set("user_id", userID)
 		}
-
+		
 		c.Next()
 	})
 

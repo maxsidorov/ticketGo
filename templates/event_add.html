@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ if .event.ID }}Редактирование{{ else }}Добавление{{ end }} события</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f9;
+    }
+    .form-container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .form-group textarea {
+      height: 100px;
+      resize: vertical;
+    }
+    .form-actions {
+      margin-top: 20px;
+      text-align: right;
+    }
+    .btn {
+      padding: 10px 15px;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .btn-save {
+      background-color: #4CAF50;
+    }
+    .btn-save:hover {
+      background-color: #45a049;
+    }
+    .btn-cancel {
+      background-color: #f44336;
+    }
+    .btn-cancel:hover {
+      background-color: #d32f2f;
+    }
+    .image-upload-container {
+      margin-top: 10px;
+    }
+    .image-preview {
+      max-width: 100%;
+      max-height: 300px;
+      display: block;
+      margin-top: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .hidden {
+      display: none;
+    }
+    .image-upload-area {
+      border: 2px dashed #ccc;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    .image-upload-area:hover {
+      border-color: #4CAF50;
+    }
+  </style>
+</head>
+<body>
+<div class="form-container">
+  <h1>{{ if .event.ID }}Редактирование{{ else }}Добавление{{ end }} события</h1>
+  <form action="/admin/events/new" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="event_id" value="{{ .event.ID }}">
+    <div class="form-group">
+      <label for="title">Название события:</label>
+      <input type="text" id="title" name="title" value="{{ .event.Title }}" required>
+    </div>
+
+    <div class="form-group">
+      <label for="datetime">Дата и время:</label>
+      <input type="datetime-local" id="datetime" name="datetime"
+             value="{{ if .event.ID }}{{ .event.DateTime.Format "2006-01-02T15:04" }}{{ end }}" required>
+    </div>
+
+    <div class="form-group">
+      <label for="location">Место проведения:</label>
+      <input type="text" id="location" name="location" value="{{ .event.Location }}" required>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Описание:</label>
+      <textarea id="description" name="description" required>{{ .event.Description }}</textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="price">Цена (руб):</label>
+      <input type="number" id="price" name="price" step="0.01" min="0"
+             value="{{ printf "%.2f" .event.Price }}" required>
+    </div>
+
+    <div class="form-group">
+      <label for="total_tickets">Общее количество билетов:</label>
+      <input type="number" id="total_tickets" name="total_tickets" min="1"
+             value="{{ .event.TotalTickets }}" required>
+    </div>
+
+    <div class="form-group">
+      <label for="category">Категория:</label>
+      <select id="category" name="category" required>
+        <option value="concert" {{ if eq .event.Category "concert" }}selected{{ end }}>Концерт</option>
+        <option value="theater" {{ if eq .event.Category "theater" }}selected{{ end }}>Театр</option>
+        <option value="exhibition" {{ if eq .event.Category "exhibition" }}selected{{ end }}>Выставка</option>
+        <option value="sport" {{ if eq .event.Category "sport" }}selected{{ end }}>Спорт</option>
+        <option value="kids" {{ if eq .event.Category "kids" }}selected{{ end }}>Детям</option>
+        <option value="other" {{ if eq .event.Category "other" }}selected{{ end }}>Другое</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Изображение события:</label>
+      <div class="image-upload-area" id="uploadArea">
+        Нажмите для загрузки изображения или перетащите его сюда
+        <input type="file" id="imageInput" name="image" accept="image/*" class="hidden">
+      </div>
+
+      <!-- Превью нового изображения -->
+      <div id="newImageContainer" class="hidden">
+        <img id="newImagePreview" class="image-preview">
+      </div>
+
+      <!-- Текущее изображение (при редактировании) -->
+      {{ if .event.Image }}
+      <div id="currentImageContainer">
+        <img src="{{ .event.Image }}" class="image-preview">
+        <input type="hidden" id="currentImageUrl" name="currentImageUrl" value="{{ .event.Image }}">
+      </div>
+      {{ end }}
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-save" name="butSave", value="true">{{ if .event.ID }}Обновить{{ else }}Создать{{ end }}</button>
+      <a href="/admin" class="btn btn-cancel">Отмена</a>
+    </div>
+  </form>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const uploadArea = document.getElementById('uploadArea');
+    const imageInput = document.getElementById('imageInput');
+    const newImageContainer = document.getElementById('newImageContainer');
+    const newImagePreview = document.getElementById('newImagePreview');
+    const currentImageContainer = document.getElementById('currentImageContainer');
+    const currentImageUrl = document.getElementById('currentImageUrl');
+
+    // Обработка клика по области загрузки
+    uploadArea.addEventListener('click', function() {
+      imageInput.click();
+    });
+
+    // Обработка выбора файла
+    imageInput.addEventListener('change', function() {
+      if (this.files && this.files[0]) {
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+          newImagePreview.src = e.target.result;
+          newImageContainer.classList.remove('hidden');
+
+          // Скрываем текущее изображение, если оно есть
+          if (currentImageContainer) {
+            currentImageContainer.classList.add('hidden');
+            if (currentImageUrl) currentImageUrl.disabled = true;
+          }
+        };
+
+        reader.readAsDataURL(this.files[0]);
+      }
+    });
+
+    // Обработка drag and drop
+    uploadArea.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      uploadArea.style.borderColor = '#4CAF50';
+    });
+
+    uploadArea.addEventListener('dragleave', function() {
+      uploadArea.style.borderColor = '#ccc';
+    });
+
+    uploadArea.addEventListener('drop', function(e) {
+      e.preventDefault();
+      uploadArea.style.borderColor = '#ccc';
+
+      if (e.dataTransfer.files.length) {
+        imageInput.files = e.dataTransfer.files;
+        const event = new Event('change');
+        imageInput.dispatchEvent(event);
+      }
+    });
+  });
+</script>
+</body>
+</html>

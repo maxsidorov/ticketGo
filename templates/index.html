@@ -563,7 +563,7 @@
                         <i class="fas fa-filter"></i>
                         Фильтры
                     </h3>
-                    
+
                     <div class="filter-section">
                         <label class="filter-label">Категория</label>
                         <select id="categoryFilter" class="filter-select">
@@ -598,7 +598,7 @@
                         <i class="fas fa-check"></i>
                         Применить фильтры
                     </button>
-                    
+
                     <button type="button" class="clear-filters-btn" onclick="clearFilters()">
                         <i class="fas fa-times"></i>
                         Очистить фильтры
@@ -627,27 +627,25 @@
                             </select>
                         </div>
                     </div>
-
-                    <div class="events-grid">
-                        {{range .Events}}
-                        <a href="/events/{{.ID}}" class="event-card">
-                            <img src="{{.Image}}" alt="{{.Title}}" class="event-image">
-                            <div class="event-content">
-                                <div class="event-date">
-                                    <i class="far fa-calendar-alt"></i>
-                                    {{.DateTime.Format "02.01.2006"}}
-                                </div>
-                                <h3 class="event-title">{{.Title}}</h3>
-                                <div class="event-location">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    {{.Location}}
-                                </div>
-                                <div class="event-price">{{.Price}} ₽</div>
-                            </div>
-                        </a>
-                        {{end}}
-                    </div>
                 </div>
+            <div class="events-grid">
+                {{range .Events}}
+                <a href="/events/{{.ID}}" class="event-card">
+                    <img src="{{.Image}}" alt="{{.Title}}" onerror="this.src='/static/placeholder.jpg'" class="event-image">
+                    <div class="event-content">
+                        <div class="event-date">
+                            <i class="far fa-calendar-alt"></i>
+                            {{.DateTime.Format "2 January 15:04"}}
+                        </div>
+                        <h3 class="event-title">{{.Title}}</h3>
+                        <div class="event-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            {{.Location}}
+                        </div>
+                        <div class="event-price">{{.Price}} ₽</div>
+                    </div>
+                </a>
+                {{end}}
             </div>
         </div>
 
@@ -665,7 +663,7 @@
             {{$delta := 2}}
 
             {{/* Показываем первую страницу */}}
-            <a href="?page=1&sort={{.SortType}}&category={{.Category}}&search={{.SearchQuery}}&min_price={{.MinPrice}}&max_price={{.MaxPrice}}&start_date={{.StartDate}}&end_date={{.EndDate}}" 
+            <a href="?page=1&sort={{.SortType}}&category={{.Category}}&search={{.SearchQuery}}&min_price={{.MinPrice}}&max_price={{.MaxPrice}}&start_date={{.StartDate}}&end_date={{.EndDate}}"
                class="pagination-link {{if eq $current 1}}active{{end}}">
                 1
             </a>
@@ -677,7 +675,7 @@
 
             {{/* Показываем страницы вокруг текущей */}}
             {{range $i := sequence (max 2 (subtract $current $delta)) (min (subtract $total 1) (add $current $delta))}}
-            <a href="?page={{$i}}&sort={{$.SortType}}&category={{$.Category}}&search={{$.SearchQuery}}&min_price={{$.MinPrice}}&max_price={{$.MaxPrice}}&start_date={{$.StartDate}}&end_date={{$.EndDate}}" 
+            <a href="?page={{$i}}&sort={{$.SortType}}&category={{$.Category}}&search={{$.SearchQuery}}&min_price={{$.MinPrice}}&max_price={{$.MaxPrice}}&start_date={{$.StartDate}}&end_date={{$.EndDate}}"
                class="pagination-link {{if eq $i $.Pagination.CurrentPage}}active{{end}}">
                 {{$i}}
             </a>
@@ -690,7 +688,7 @@
 
             {{/* Показываем последнюю страницу, если она не первая */}}
             {{if gt $total 1}}
-            <a href="?page={{$total}}&sort={{.SortType}}&category={{.Category}}&search={{.SearchQuery}}&min_price={{.MinPrice}}&max_price={{.MaxPrice}}&start_date={{.StartDate}}&end_date={{.EndDate}}" 
+            <a href="?page={{$total}}&sort={{.SortType}}&category={{.Category}}&search={{.SearchQuery}}&min_price={{.MinPrice}}&max_price={{.MaxPrice}}&start_date={{.StartDate}}&end_date={{.EndDate}}"
                class="pagination-link {{if eq $current $total}}active{{end}}">
                 {{$total}}
             </a>
@@ -738,14 +736,14 @@
         // Advanced filters functionality
         function applyFilters() {
             const urlParams = new URLSearchParams(window.location.search);
-            
+
             // Get filter values
             const category = document.getElementById('categoryFilter').value;
             const minPrice = document.getElementById('minPrice').value;
             const maxPrice = document.getElementById('maxPrice').value;
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
-            
+
             console.log('Applying filters:', {
                 category,
                 minPrice,
@@ -753,43 +751,43 @@
                 startDate,
                 endDate
             });
-            
+
             // Update URL parameters
             if (category && category !== '') {
                 urlParams.set('category', category);
             } else {
                 urlParams.delete('category');
             }
-            
+
             if (minPrice && minPrice !== '') {
                 urlParams.set('min_price', minPrice);
             } else {
                 urlParams.delete('min_price');
             }
-            
+
             if (maxPrice && maxPrice !== '') {
                 urlParams.set('max_price', maxPrice);
             } else {
                 urlParams.delete('max_price');
             }
-            
+
             if (startDate && startDate !== '') {
                 urlParams.set('start_date', startDate);
             } else {
                 urlParams.delete('start_date');
             }
-            
+
             if (endDate && endDate !== '') {
                 urlParams.set('end_date', endDate);
             } else {
                 urlParams.delete('end_date');
             }
-            
+
             // Reset page to 1 when applying filters
             urlParams.set('page', '1');
-            
+
             console.log('New URL params:', urlParams.toString());
-            
+
             // Navigate to filtered results
             window.location.search = urlParams.toString();
         }
@@ -801,12 +799,12 @@
             document.getElementById('maxPrice').value = '';
             document.getElementById('startDate').value = '';
             document.getElementById('endDate').value = '';
-            
+
             // Clear URL parameters except search and sort
             const urlParams = new URLSearchParams(window.location.search);
             const search = urlParams.get('search');
             const sort = urlParams.get('sort') || 'date';
-            
+
             // Create new URL with only search and sort
             const newParams = new URLSearchParams();
             if (search) {
@@ -815,7 +813,7 @@
             if (sort) {
                 newParams.set('sort', sort);
             }
-            
+
             // Navigate to cleared filters
             window.location.search = newParams.toString();
         }
@@ -829,7 +827,7 @@
             const maxPrice = urlParams.get('max_price');
             const startDate = urlParams.get('start_date');
             const endDate = urlParams.get('end_date');
-            
+
             console.log('Initializing filters from URL:', {
                 category,
                 sort,
@@ -838,7 +836,7 @@
                 startDate,
                 endDate
             });
-            
+
             // Set active category tab
             document.querySelectorAll('.filter-tab').forEach(tab => {
                 if (tab.dataset.category === category) {
@@ -867,13 +865,13 @@
             if (endDate) {
                 document.getElementById('endDate').value = endDate;
             }
-            
+
             // Set category filter
             const categoryFilter = document.getElementById('categoryFilter');
             if (categoryFilter && category !== 'all') {
                 categoryFilter.value = category;
             }
-            
+
             // Set search input value
             const searchQuery = urlParams.get('search');
             if (searchQuery) {
@@ -894,19 +892,19 @@
                 applyFilters();
             }
         });
-        
+
         document.getElementById('maxPrice').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 applyFilters();
             }
         });
-        
+
         document.getElementById('startDate').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 applyFilters();
             }
         });
-        
+
         document.getElementById('endDate').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 applyFilters();

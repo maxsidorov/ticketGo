@@ -4,8 +4,8 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
-	"github.com/maxsidorov/ticketGo/models"
 	"github.com/maxsidorov/ticketGo/db"
+	"github.com/maxsidorov/ticketGo/models"
 	"github.com/maxsidorov/ticketGo/service"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
@@ -40,7 +40,7 @@ func Login(c *gin.Context) {
 	var user models.User
 	if err := db.DB.Where("username = ? OR email = ?", usernameOrEmail, usernameOrEmail).First(&user).Error; err != nil {
 		c.HTML(http.StatusUnauthorized, "login.html", gin.H{
-			"error":         "Неверное имя пользователя/email или пароль",
+			"error":           "Неверное имя пользователя/email или пароль",
 			"IsAuthenticated": false,
 		})
 		return
@@ -49,7 +49,7 @@ func Login(c *gin.Context) {
 	// Проверяем пароль
 	if !checkPasswordHash(password, user.Password) {
 		c.HTML(http.StatusUnauthorized, "login.html", gin.H{
-			"error":         "Неверное имя пользователя/email или пароль",
+			"error":           "Неверное имя пользователя/email или пароль",
 			"IsAuthenticated": false,
 		})
 		return
@@ -61,7 +61,7 @@ func Login(c *gin.Context) {
 	session.Set("user_id", user.ID)
 	if err := session.Save(); err != nil {
 		c.HTML(http.StatusInternalServerError, "login.html", gin.H{
-			"error":         "Ошибка при сохранении сессии",
+			"error":           "Ошибка при сохранении сессии",
 			"IsAuthenticated": false,
 		})
 		return
