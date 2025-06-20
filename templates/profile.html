@@ -553,7 +553,7 @@
 
                         <section id="settings-section" style="display:none;">
                             <h2 class="section-title">Настройки профиля</h2>
-                            <form id="settingsForm" class="settings-form">
+                            <form id="settingsForm" class="settings-form" action="/profile/update" method="post">
                                 <div class="form-group">
                                     <label for="username">Имя пользователя</label>
                                     <input type="text" id="username" name="username" value="{{.Username}}" required>
@@ -639,31 +639,35 @@
         // Обработка формы настроек
         document.querySelector('.settings-form').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
             const newPassword = document.getElementById('new_password').value;
             const confirmPassword = document.getElementById('confirm_password').value;
-            
             if (newPassword && newPassword !== confirmPassword) {
                 alert('Пароли не совпадают');
                 return;
             }
-            
             const formData = new FormData(this);
-            
             try {
                 const response = await fetch(this.action, {
                     method: 'POST',
                     body: formData
                 });
-                
-                const result = await response.json();
-                
+                let result = {};
+                try {
+                    result = await response.json();
+                } catch (jsonError) {
+                    alert('Настройки сохранены, но сервер вернул неожиданный ответ.');
+                    return;
+                }
                 if (response.ok) {
-                    alert(result.message || 'Настройки успешно обновлены');
-                    // Очищаем поля паролей после успешного обновления
+                    if (!window._profileSettingsSaved) {
+                        alert(result.message || 'Настройки успешно обновлены');
+                        window._profileSettingsSaved = true;
+                    }
                     document.getElementById('current_password').value = '';
                     document.getElementById('new_password').value = '';
                     document.getElementById('confirm_password').value = '';
+                    document.querySelector('.save-btn').disabled = true;
+                    return;
                 } else {
                     alert(result.error || 'Произошла ошибка при обновлении настроек');
                 }
@@ -671,6 +675,7 @@
                 alert('Произошла ошибка при обновлении настроек');
                 console.error('Error:', error);
             }
+            setTimeout(() => { window._profileSettingsSaved = false; }, 2000);
         });
 
         function showToast(type, message) {

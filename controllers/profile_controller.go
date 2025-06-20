@@ -68,27 +68,12 @@ func UpdateProfile(c *gin.Context) {
 		NewPassword     string `json:"new_password" form:"new_password"`
 	}
 
-	// Пробуем сначала получить данные из JSON
-	if err := c.ShouldBindJSON(&formData); err != nil {
-		// Если не получилось, пробуем получить из формы
-		if err := c.ShouldBind(&formData); err != nil {
+	if err := c.ShouldBind(&formData); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
 			"error":   "Неверный формат данных",
 		})
 		return
-		}
-	}
-
-	// Проверяем текущий пароль, если он указан
-	if formData.CurrentPassword != "" {
-		if !service.CheckPasswordHash(formData.CurrentPassword, user.Password) {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"success": false,
-				"error":   "Неверный текущий пароль",
-			})
-			return
-		}
 	}
 
 	// Проверяем, не занято ли имя пользователя
