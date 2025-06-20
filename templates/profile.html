@@ -707,7 +707,6 @@
                     alert(result.error || 'Произошла ошибка при обновлении настроек');
                 }
             } catch (error) {
-                alert('Произошла ошибка при обновлении настроек');
                 console.error('Error:', error);
             }
             setTimeout(() => { window._profileSettingsSaved = false; }, 2000);

@@ -627,28 +627,28 @@
                             </select>
                         </div>
                     </div>
-                </div>
-            <div class="events-grid">
-                {{range .Events}}
-                <a href="/events/{{.ID}}" class="event-card">
-                    <img src="{{.Image}}" alt="{{.Title}}" onerror="this.src='/static/placeholder.jpg'" class="event-image">
-                    <div class="event-content">
-                        <div class="event-date">
-                            <i class="far fa-calendar-alt"></i>
-                            {{.DateTime.Format "2 January 15:04"}}
-                        </div>
-                        <h3 class="event-title">{{.Title}}</h3>
-                        <div class="event-location">
-                            <i class="fas fa-map-marker-alt"></i>
-                            {{.Location}}
-                        </div>
-                        <div class="event-price">{{.Price}} ₽</div>
+                    <div class="events-grid">
+                        {{range .Events}}
+                        <a href="/events/{{.ID}}" class="event-card">
+                            <img src="{{.Image}}" alt="{{.Title}}" onerror="this.src='/static/placeholder.jpg'" class="event-image">
+                            <div class="event-content">
+                                <div class="event-date">
+                                    <i class="far fa-calendar-alt"></i>
+                                    {{.DateTime.Format "2 January 15:04"}}
+                                </div>
+                                <h3 class="event-title">{{.Title}}</h3>
+                                <div class="event-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    {{.Location}}
+                                </div>
+                                <div class="event-price">{{.Price}} ₽</div>
+                            </div>
+                        </a>
+                        {{end}}
                     </div>
-                </a>
-                {{end}}
+                </div>
             </div>
         </div>
-
         <!-- Pagination -->
         {{if .Pagination.TotalPages}}
         <div class="pagination">

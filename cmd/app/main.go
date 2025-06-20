@@ -12,12 +12,11 @@ import (
 	"github.com/maxsidorov/ticketGo/routes"
 	"github.com/maxsidorov/ticketGo/storage"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 	"log"
-	"net/http"
 	"runtime/debug"
 	"text/template"
 	"time"
-	"gorm.io/gorm"
 )
 
 func hashPassword(password string) (string, error) {
@@ -49,8 +48,7 @@ func main() {
 		Path:     "/",
 		MaxAge:   86400 * 7, // 7 дней
 		HttpOnly: true,
-		Secure:   false,     // true только если у тебя HTTPS!
-		SameSite: http.SameSiteLaxMode,
+		Secure:   false, // true только если у тебя HTTPS
 	})
 	r.Use(sessions.Sessions("session", sessionStore))
 
@@ -58,15 +56,15 @@ func main() {
 		session := sessions.Default(c)
 		username := session.Get("username")
 		userID := session.Get("user_id")
-		
+
 		if username != nil {
 			c.Set("username", username)
 		}
-		
+
 		if userID != nil {
 			c.Set("user_id", userID)
 		}
-		
+
 		c.Next()
 	})
 

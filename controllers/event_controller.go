@@ -1,17 +1,17 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/maxsidorov/ticketGo/models"
-	"github.com/maxsidorov/ticketGo/db"
-	"gorm.io/gorm"
+	"fmt"
 	"github.com/gin-contrib/sessions"
+	"github.com/gin-gonic/gin"
+	"github.com/maxsidorov/ticketGo/db"
+	"github.com/maxsidorov/ticketGo/models"
+	"gorm.io/gorm"
 	"log"
 	"math"
 	"net/http"
 	"strconv"
 	"time"
-	"fmt"
 )
 
 type EventController struct {
@@ -104,7 +104,6 @@ func ShowMainPage(c *gin.Context) {
 		}
 	}
 
-
 	// Получаем текущее время
 	now := time.Now()
 
@@ -133,26 +132,26 @@ func ShowMainPage(c *gin.Context) {
 	if err := upcomingQuery.Find(&upcomingEvents).Error; err != nil {
 		log.Printf("Error fetching upcoming events: %v", err)
 		c.HTML(http.StatusInternalServerError, "index.html", gin.H{
-			"error": "Ошибка при получении мероприятий",
+			"error":           "Ошибка при получении мероприятий",
 			"IsAuthenticated": c.GetBool("is_authenticated"),
 		})
 		return
 	}
-	
+
 	// Получаем прошедшие события
 	pastQuery := query.Where("date_time < ?", now).Order("date_time DESC")
 	if err := pastQuery.Find(&pastEvents).Error; err != nil {
 		log.Printf("Error fetching past events: %v", err)
 		c.HTML(http.StatusInternalServerError, "index.html", gin.H{
-			"error": "Ошибка при получении мероприятий",
+			"error":           "Ошибка при получении мероприятий",
 			"IsAuthenticated": c.GetBool("is_authenticated"),
 		})
 		return
 	}
-	
+
 	// Объединяем события
 	events = append(upcomingEvents, pastEvents...)
-	
+
 	// Применяем пагинацию
 	total := len(events)
 	start := offset
@@ -163,32 +162,33 @@ func ShowMainPage(c *gin.Context) {
 	if end > total {
 		end = total
 	}
-	
+
 	// Получаем страницу событий
 	pageEvents := events[start:end]
-	
+
 	// Получаем информацию о пользователе из сессии
 	userID := session.Get("user_id")
 
 	// Рассчитываем информацию о пагинации
 	totalPages := int(math.Ceil(float64(total) / float64(pageSizeNum)))
+	fmt.Println(pageEvents, "hello")
 	c.HTML(http.StatusOK, "index.html", gin.H{
-		"Events": pageEvents,
-		"SearchQuery": searchQuery,
-		"SortType": sortType,
-		"Category": category,
-		"MinPrice": minPrice,
-		"MaxPrice": maxPrice,
-		"StartDate": startDate,
-		"EndDate": endDate,
+		"Events":          pageEvents,
+		"SearchQuery":     searchQuery,
+		"SortType":        sortType,
+		"Category":        category,
+		"MinPrice":        minPrice,
+		"MaxPrice":        maxPrice,
+		"StartDate":       startDate,
+		"EndDate":         endDate,
 		"AdminLevel":      user.AdminLevel,
 		"IsAuthenticated": userID != nil,
-		"Username": username,
+		"Username":        username,
 		"Pagination": gin.H{
 			"CurrentPage": pageNum,
-			"TotalPages": totalPages,
-			"TotalItems": total,
-			"PageSize": pageSizeNum,
+			"TotalPages":  totalPages,
+			"TotalItems":  total,
+			"PageSize":    pageSizeNum,
 		},
 	})
 }
@@ -231,11 +231,11 @@ func (ec *EventController) ShowEvent(c *gin.Context) {
 	log.Printf("Remaining tickets: %d", remainingTickets)
 
 	c.HTML(http.StatusOK, "event.html", gin.H{
-		"Event":           event,
-		"UserTickets":     userTickets,
+		"Event":            event,
+		"UserTickets":      userTickets,
 		"RemainingTickets": remainingTickets,
-		"IsAuthenticated": isAuthenticated,
-		"Username":        username,
+		"IsAuthenticated":  isAuthenticated,
+		"Username":         username,
 	})
 }
 
@@ -286,8 +286,8 @@ func (ec *EventController) BuyTicket(c *gin.Context) {
 		if err == gorm.ErrRecordNotFound {
 			// Создаем новую запись о билетах
 			newTicket := models.UserTicket{
-				UserID:  userID.(uint),
-				EventID: event.ID,
+				UserID:   userID.(uint),
+				EventID:  event.ID,
 				Quantity: quantity,
 			}
 			if err := tx.Create(&newTicket).Error; err != nil {
@@ -390,15 +390,15 @@ func ShowEvents(c *gin.Context) {
 	totalPages := (int(total) + pageSize - 1) / pageSize
 
 	c.HTML(http.StatusOK, "events.html", gin.H{
-		"events":      events,
-		"page":        page,
-		"pageSize":    pageSize,
-		"totalPages":  totalPages,
-		"total":       total,
-		"category":    category,
-		"search":      search,
-		"sort":        sort,
-		"categories":  []string{"concert", "theater", "exhibition", "sport", "other"},
+		"events":     events,
+		"page":       page,
+		"pageSize":   pageSize,
+		"totalPages": totalPages,
+		"total":      total,
+		"category":   category,
+		"search":     search,
+		"sort":       sort,
+		"categories": []string{"concert", "theater", "exhibition", "sport", "other"},
 	})
 }
 
@@ -495,7 +495,7 @@ func (ec *EventController) ReturnTicket(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": fmt.Sprintf("Успешно возвращено %d билетов", quantity),
+		"message":  fmt.Sprintf("Успешно возвращено %d билетов", quantity),
 		"returned": quantity,
 	})
 }
