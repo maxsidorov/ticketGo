@@ -641,8 +641,14 @@
             e.preventDefault();
             const newPassword = document.getElementById('new_password').value;
             const confirmPassword = document.getElementById('confirm_password').value;
+            const email = document.getElementById('email').value;
+            const username = document.getElementById('username').value;
             if (newPassword && newPassword !== confirmPassword) {
                 alert('Пароли не совпадают');
+                return;
+            }
+            if (!email || !username) {
+                alert('Email и имя пользователя обязательны для заполнения');
                 return;
             }
             const formData = new FormData(this);
