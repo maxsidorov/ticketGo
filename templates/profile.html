@@ -641,14 +641,29 @@
             e.preventDefault();
             const newPassword = document.getElementById('new_password').value;
             const confirmPassword = document.getElementById('confirm_password').value;
-            const email = document.getElementById('email').value;
-            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value.trim();
+            const username = document.getElementById('username').value.trim();
             if (newPassword && newPassword !== confirmPassword) {
                 alert('Пароли не совпадают');
                 return;
             }
             if (!email || !username) {
                 alert('Email и имя пользователя обязательны для заполнения');
+                return;
+            }
+            if (username.length < 8 || username.length > 50) {
+                alert('Имя пользователя должно быть от 8 до 50 символов');
+                return;
+            }
+            // Проверять длину пароля только если пользователь вводит новый пароль
+            if (newPassword && (newPassword.length < 8 || newPassword.length > 50)) {
+                alert('Пароль должен быть от 8 до 50 символов');
+                return;
+            }
+            // Простая проверка email через regex
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Введите корректный email');
                 return;
             }
             const formData = new FormData(this);
