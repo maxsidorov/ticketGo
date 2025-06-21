@@ -1,9 +1,0 @@
-/* Remove toast notification styles */
-.toast-container,
-.toast,
-.toast.bg-success,
-.toast.bg-danger,
-.toast-body,
-.btn-close-white {
-    display: none;
-} 
