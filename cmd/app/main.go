@@ -106,7 +106,7 @@ func main() {
 	// Установка middleware для всех запросов
 	r.Use(middleware.SetAuthStatus())
 
-	// Регистрируем все маршруты
+	// Регистрируем все маршруты сайта
 	routes.RegisterRoutes(r, db.DB)
 	// Создание пользователя admin, если его нет
 	var adminUser models.User

@@ -1,17 +1,12 @@
 package storage
 
 import (
-	"gorm.io/gorm"
 	"github.com/maxsidorov/ticketGo/models"
+	"gorm.io/gorm"
 )
 
-// создание события
 type EventStorage struct {
 	db *gorm.DB
-}
-
-func NewEventStorage(db *gorm.DB) *EventStorage {
-	return &EventStorage{db: db}
 }
 
 func (s *EventStorage) Create(event *models.Event) (uint, error) {
@@ -23,7 +18,7 @@ func (s *EventStorage) Create(event *models.Event) (uint, error) {
 
 func (s *EventStorage) GetAll(page, pageSize int) ([]models.Event, error) {
 	var events []models.Event
-	err := s.db.Offset((page-1)*pageSize).Limit(pageSize).Find(&events).Error
+	err := s.db.Offset((page - 1) * pageSize).Limit(pageSize).Find(&events).Error
 	return events, err
 }
 

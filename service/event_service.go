@@ -13,13 +13,6 @@ type EventService struct {
 	db      *gorm.DB
 }
 
-func NewEventService(storage *storage.EventStorage, db *gorm.DB) *EventService {
-	return &EventService{
-		storage: storage,
-		db:      db,
-	}
-}
-
 func (s *EventService) CreateEvent(event *models.Event) (uint, error) {
 	if event.DateTime.Before(time.Now()) {
 		return 0, errors.New("event date must be in the future")

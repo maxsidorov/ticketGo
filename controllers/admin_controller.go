@@ -113,6 +113,7 @@ func AddEventPage(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Некорректный формат даты и времени"})
 			return
 		}
+		//решение проблемы с часовыми поясами
 		datetime = time.Date(
 			datetime.Year(),
 			datetime.Month(),
@@ -124,6 +125,7 @@ func AddEventPage(c *gin.Context) {
 			time.Local,
 		)
 
+		//сжатие картинки для эффективного хранения
 		fileHeader, err := c.FormFile("image")
 		var uploadPath string
 		if err == nil {
@@ -156,7 +158,7 @@ func AddEventPage(c *gin.Context) {
 			}
 			defer outFile.Close()
 
-			// Кодируем в JPEG с качеством 80%
+			// Кодируем в JPEG с качеством 80% после сжатия(незначительно)
 			jpegOptions := jpeg.Options{Quality: 80}
 			if err := jpeg.Encode(outFile, img, &jpegOptions); err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка при конвертации изображения"})
@@ -202,6 +204,7 @@ func AdminUsersPage(c *gin.Context) {
 
 	query := db.DB.Model(&models.User{})
 
+	//проверка доступа
 	session := sessions.Default(c)
 	username := session.Get("username")
 	var user models.User

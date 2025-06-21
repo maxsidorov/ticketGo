@@ -162,11 +162,3 @@ func Logout(c *gin.Context) {
 	session.Save()
 	c.Redirect(http.StatusFound, "/")
 }
-
-func CheckAuth(c *gin.Context) {
-	session := sessions.Default(c)
-	userID := session.Get("user_id")
-	c.JSON(http.StatusOK, gin.H{
-		"authenticated": userID != nil,
-	})
-}
