@@ -6,7 +6,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - DB_HOST=postgres
+      - DB_HOST=5.35.89.222
       - DB_PORT=5432
       - DB_USER=postgres
       - DB_PASSWORD=postgres
